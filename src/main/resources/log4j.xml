@@ -42,7 +42,7 @@
         </filter>
     </appender>
     <logger name="lu.uni.trux.difuzer" additivity="false">
-        <level value="INFO"/>
+        <level value="DEBUG"/>
         <appender-ref ref="STDOUT_DEBUG"/>
         <appender-ref ref="STDOUT_INFO"/>
         <appender-ref ref="STDOUT_WARN"/>

@@ -9,6 +9,7 @@ import lu.uni.trux.difuzer.instrumentation.IfClassGenerator;
 import lu.uni.trux.difuzer.utils.CommandLineOptions;
 import soot.G;
 import soot.PackManager;
+import soot.Scene;
 import soot.SceneTransformer;
 import soot.Transform;
 import soot.options.Options;
@@ -19,6 +20,10 @@ public class PreAnalysis {
 
 	private Logger logger = LoggerFactory.getLogger(Main.class);
 
+	public PreAnalysis(String[] args) {
+		this.options = new CommandLineOptions(args);
+	}
+	
 	public void run() {
 		this.logger.debug("Initializing Soot for Pre-Analysis");
 		initializeSoot();
@@ -48,5 +53,6 @@ public class PreAnalysis {
 		Options.v().set_process_dir(apps);
 		Options.v().set_output_dir(this.options.getOutput());
 		Options.v().set_force_overwrite(true);
+		Scene.v().loadNecessaryClasses();
 	}
 }

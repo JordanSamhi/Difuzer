@@ -28,7 +28,7 @@ package lu.uni.trux.difuzer;
 
 public class Main {
 	public static void main(String[] args) throws Throwable {
-		PreAnalysis pa = new PreAnalysis();
+		PreAnalysis pa = new PreAnalysis(args);
 		pa.run();
 	}
 }
