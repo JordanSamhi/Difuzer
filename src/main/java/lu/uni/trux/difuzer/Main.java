@@ -1,7 +1,5 @@
 package lu.uni.trux.difuzer;
 
-import lu.uni.trux.difuzer.instrumentation.IfClassGenerator;
-
 /*-
  * #%L
  * Difuzer
@@ -30,10 +28,7 @@ import lu.uni.trux.difuzer.instrumentation.IfClassGenerator;
 
 public class Main {
 	public static void main(String[] args) throws Throwable {
-		initializeNewClasses();
-	}
-
-	private static void initializeNewClasses() {
-		IfClassGenerator.v().generateClass();
+		PreAnalysis pa = new PreAnalysis();
+		pa.run();
 	}
 }

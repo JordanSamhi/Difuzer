@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CommandLineOptions {
 
-	private static final Triplet<String, String, String> FILE = new Triplet<String, String, String>("file", "f", "Apk file");
+	private static final Triplet<String, String, String> APK = new Triplet<String, String, String>("apk", "a", "Apk file");
 	private static final Triplet<String, String, String> HELP = new Triplet<String, String, String>("help", "h", "Print this message");
 	private static final Triplet<String, String, String> TIMEOUT =
 			new Triplet<String, String, String>("timeout", "t", "Set a timeout in minutes (60 by default) to exit the application");
@@ -96,11 +96,11 @@ public class CommandLineOptions {
 	 * Initialization of all recognized options
 	 */
 	private void initOptions() {
-		final Option file = Option.builder(FILE.getValue1())
-				.longOpt(FILE.getValue0())
-				.desc(FILE.getValue2())
+		final Option apk = Option.builder(APK.getValue1())
+				.longOpt(APK.getValue0())
+				.desc(APK.getValue2())
 				.hasArg(true)
-				.argName(FILE.getValue0())
+				.argName(APK.getValue0())
 				.required(true)
 				.build();
 
@@ -151,7 +151,7 @@ public class CommandLineOptions {
 
 		this.firstOptions.addOption(help);
 
-		this.options.addOption(file);
+		this.options.addOption(apk);
 		this.options.addOption(platforms);
 		this.options.addOption(timeout);
 		this.options.addOption(output);
@@ -163,8 +163,8 @@ public class CommandLineOptions {
 		}
 	}
 
-	public String getFile() {
-		return this.cmdLine.getOptionValue(FILE.getValue0());
+	public String getApk() {
+		return this.cmdLine.getOptionValue(APK.getValue0());
 	}
 
 	public String getPlatforms() {
