@@ -76,41 +76,29 @@ public class IfClassGenerator {
 		units.add(Jimple.v().newIdentityStmt(thisLocal, Jimple.v().newThisRef(RefType.v(Constants.IF_CLASS))));
 		units.add(Jimple.v().newInvokeStmt(
 				Jimple.v().newSpecialInvokeExpr(thisLocal,
-						Utils.getMethodRef(Constants.JAVA_LANG_OBJECT, Constants.INIT_METHOD))));
+						Utils.getMethodRef(Constants.JAVA_LANG_OBJECT, Constants.INIT_METHOD_SUBSIG))));
 		units.add(Jimple.v().newReturnVoidStmt());
 		body.validate();
 		this.ifClass.addMethod(sm);
-		System.out.println(body);
 	}
 
 	private void generateIfMethod() {
 		List<Type> args = new ArrayList<Type>();
 		args.add(RefType.v(Constants.JAVA_LANG_OBJECT));
 		args.add(RefType.v(Constants.JAVA_LANG_OBJECT));
-		args.add(RefType.v(Constants.JAVA_LANG_OBJECT));
-		args.add(RefType.v(Constants.JAVA_LANG_OBJECT));
 		SootMethod sm = new SootMethod(Constants.IF_METHOD,
-				args, VoidType.v(), Modifier.PUBLIC);
+				args, VoidType.v(), Modifier.PUBLIC | Modifier.STATIC);
 		JimpleBody body = Jimple.v().newBody(sm);
 		sm.setActiveBody(body);
 		UnitPatchingChain units = body.getUnits();
-		Local thisLocal = Utils.addLocal(body, RefType.v(Constants.IF_CLASS));
 		Local objLocal1 = Utils.addLocal(body, RefType.v(Constants.JAVA_LANG_OBJECT));
 		Local objLocal2 = Utils.addLocal(body, RefType.v(Constants.JAVA_LANG_OBJECT));
-		Local objLocal3 = Utils.addLocal(body, RefType.v(Constants.JAVA_LANG_OBJECT));
-		Local objLocal4 = Utils.addLocal(body, RefType.v(Constants.JAVA_LANG_OBJECT));
-		units.add(Jimple.v().newIdentityStmt(thisLocal, Jimple.v().newThisRef(RefType.v(Constants.IF_CLASS))));
 		units.add(Jimple.v().newIdentityStmt(objLocal1,
 				Jimple.v().newParameterRef(RefType.v(Constants.JAVA_LANG_OBJECT), 0)));
 		units.add(Jimple.v().newIdentityStmt(objLocal2,
 				Jimple.v().newParameterRef(RefType.v(Constants.JAVA_LANG_OBJECT), 1)));
-		units.add(Jimple.v().newIdentityStmt(objLocal3,
-				Jimple.v().newParameterRef(RefType.v(Constants.JAVA_LANG_OBJECT), 2)));
-		units.add(Jimple.v().newIdentityStmt(objLocal4,
-				Jimple.v().newParameterRef(RefType.v(Constants.JAVA_LANG_OBJECT), 3)));
 		units.add(Jimple.v().newReturnVoidStmt());
 		body.validate();
 		this.ifClass.addMethod(sm);
-		System.out.println(body);
 	}
 }

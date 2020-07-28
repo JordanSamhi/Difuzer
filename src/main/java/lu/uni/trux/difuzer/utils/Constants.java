@@ -32,4 +32,18 @@ public class Constants {
 	 * Misc
 	 */
 	public static final String DIFUZER = "Difuzer";
+	public static final String IF_CLASS = "If";
+	public static final String INIT = "<init>";
+	public static final String IF_METHOD = "if";
+
+	/**
+	 * Classes
+	 */
+	public static final String JAVA_LANG_OBJECT = "java.lang.Object";
+
+	/**
+	 * Methods
+	 */
+	public static final String INIT_METHOD_SUBSIG = "void <init>()";
+	public static final String IF_METHOD_SUBSIG = "void 'if'(java.lang.Object,java.lang.Object)";
 }
