@@ -4,9 +4,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>lu.uni.trux.difuzer</groupId>
 	<artifactId>Difuzer</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1</version>
 	<name>Difuzer</name>
-
+	<properties>
+		<maven.compiler.source>7</maven.compiler.source>
+		<maven.compiler.target>7</maven.compiler.target>
+	</properties>
 	<build>
 		<plugins>
 			<plugin>
