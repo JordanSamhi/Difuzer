@@ -1,0 +1,4 @@
+<android.telephony.SmsMessage: java.lang.String getMessageBody()> -> _SOURCE_
+
+<If: void 'if'(java.lang.Object,java.lang.Object)> -> _SINK_
+<java.lang.String: boolean contains(java.lang.CharSequence)> -> _SINK_
