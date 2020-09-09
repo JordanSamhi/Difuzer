@@ -50,6 +50,12 @@ public class Utils {
 	private static String getNextLocalName() {
 		return "loc"  + localNum++;
 	}
+	
+	public static String getBasename(String path) {
+		String[] split = path.split("/");
+		String filename = split[split.length - 1];
+		return filename;
+	}
 
 	// Inspired by Flowdroid
 	public static boolean isSystemClass(String className) {

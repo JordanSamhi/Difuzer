@@ -45,17 +45,11 @@ import org.slf4j.LoggerFactory;
 public class CommandLineOptions {
 
 	private static final Triplet<String, String, String> APK = new Triplet<String, String, String>("apk", "a", "Apk file");
+	private static final Triplet<String, String, String> SSF = new Triplet<String, String, String>("ssf", "s", "Sources and Sinks file");
+	private static final Triplet<String, String, String> ETW = new Triplet<String, String, String>("etw", "e", "Easy Taint Wrapper file");
 	private static final Triplet<String, String, String> HELP = new Triplet<String, String, String>("help", "h", "Print this message");
-	private static final Triplet<String, String, String> TIMEOUT =
-			new Triplet<String, String, String>("timeout", "t", "Set a timeout in minutes (60 by default) to exit the application");
 	private static final Triplet<String, String, String> PLATFORMS =
 			new Triplet<String, String, String>("platforms", "p", "Android platforms folder");
-	private static final Triplet<String, String, String> OUTPUT =
-			new Triplet<String, String, String>("output", "o", "Output results in given file");
-	private static final Triplet<String, String, String> QUIET =
-			new Triplet<String, String, String>("quiet", "q", "Do not output results in console");
-	private static final Triplet<String, String, String> CALLGRAPH =
-			new Triplet<String, String, String>("callgraph", "c", "Define the call-graph algorithm to use (SPARK, CHA, RTA, VTA)");
 
 	private Options options, firstOptions;
 	private CommandLineParser parser;
@@ -103,6 +97,22 @@ public class CommandLineOptions {
 				.argName(APK.getValue0())
 				.required(true)
 				.build();
+		
+		final Option ssf = Option.builder(SSF.getValue1())
+				.longOpt(SSF.getValue0())
+				.desc(SSF.getValue2())
+				.hasArg(true)
+				.argName(SSF.getValue0())
+				.required(true)
+				.build();
+		
+		final Option etw = Option.builder(ETW.getValue1())
+				.longOpt(ETW.getValue0())
+				.desc(ETW.getValue2())
+				.hasArg(true)
+				.argName(ETW.getValue0())
+				.required(false)
+				.build();
 
 		final Option platforms = Option.builder(PLATFORMS.getValue1())
 				.longOpt(PLATFORMS.getValue0())
@@ -118,45 +128,12 @@ public class CommandLineOptions {
 				.argName(HELP.getValue0())
 				.build();
 
-		final Option timeout = Option.builder(TIMEOUT.getValue1())
-				.longOpt(TIMEOUT.getValue0())
-				.desc(TIMEOUT.getValue2())
-				.argName(TIMEOUT.getValue0())
-				.hasArg(true)
-				.build();
-		timeout.setOptionalArg(true);
-		timeout.setType(Number.class);
-
-
-		final Option output = Option.builder(OUTPUT.getValue1())
-				.longOpt(OUTPUT.getValue0())
-				.desc(OUTPUT.getValue2())
-				.hasArg(true)
-				.argName(OUTPUT.getValue0())
-				.build();
-
-		final Option quiet = Option.builder(QUIET.getValue1())
-				.longOpt(QUIET.getValue0())
-				.desc(QUIET.getValue2())
-				.argName(QUIET.getValue0())
-				.build();
-
-		final Option callgraph = Option.builder(CALLGRAPH.getValue1())
-				.longOpt(CALLGRAPH.getValue0())
-				.desc(CALLGRAPH.getValue2())
-				.argName(CALLGRAPH.getValue0())
-				.hasArg(true)
-				.build();
-		timeout.setOptionalArg(true);
-
 		this.firstOptions.addOption(help);
 
 		this.options.addOption(apk);
 		this.options.addOption(platforms);
-		this.options.addOption(timeout);
-		this.options.addOption(output);
-		this.options.addOption(quiet);
-		this.options.addOption(callgraph);
+		this.options.addOption(ssf);
+		this.options.addOption(etw);
 
 		for(Option o : this.firstOptions.getOptions()) {
 			this.options.addOption(o);
@@ -170,39 +147,16 @@ public class CommandLineOptions {
 	public String getPlatforms() {
 		return this.cmdLine.getOptionValue(PLATFORMS.getValue0());
 	}
-
-	public boolean hasOutput() {
-		return this.cmdLine.hasOption(OUTPUT.getValue1());
+	
+	public String getSourcesSinksFile() {
+		return this.cmdLine.getOptionValue(SSF.getValue0());
 	}
-
-	public String getOutput() {
-		return this.cmdLine.getOptionValue(OUTPUT.getValue0());
+	
+	public String getEasyTaintWrapperFile() {
+		return this.cmdLine.getOptionValue(ETW.getValue0());
 	}
-
-	public boolean hasQuiet() {
-		return this.cmdLine.hasOption(QUIET.getValue1());
-	}
-
-	public int getTimeout() {
-		Number n = null;
-		try {
-			n = (Number)this.cmdLine.getParsedOptionValue(TIMEOUT.getValue1());
-			if(n == null) {
-				return 0;
-			}else {
-				return n.intValue();
-			}
-		} catch (Exception e) {}
-		return 0;
-	}
-
-	public String getCallGraph() {
-		String cg = this.cmdLine.getOptionValue(CALLGRAPH.getValue0());
-		if(cg != null) {
-			if(cg.equals("SPARK") || cg.equals("CHA") || cg.equals("RTA") || cg.equals("VTA")) {
-				return cg;
-			}
-        }
-		return null;
+	
+	public boolean hasEasyTaintWrapperFile() {
+		return this.cmdLine.hasOption(ETW.getValue1());
 	}
 }

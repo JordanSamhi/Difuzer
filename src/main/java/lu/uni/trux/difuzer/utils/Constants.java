@@ -1,5 +1,7 @@
 package lu.uni.trux.difuzer.utils;
 
+import java.io.File;
+
 /*-
  * #%L
  * Difuzer
@@ -35,6 +37,9 @@ public class Constants {
 	public static final String IF_CLASS = "If";
 	public static final String INIT = "<init>";
 	public static final String IF_METHOD = "if";
+	public static final String SOURCE = "_SOURCE_";
+	public static final String SINK = "_SINK_";
+	public static final String TARGET_TMP_DIR = String.format("%s%s%s", System.getProperty("java.io.tmpdir"), File.separator, "difuzer");
 
 	/**
 	 * Classes
