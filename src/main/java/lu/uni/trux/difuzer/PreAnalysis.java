@@ -1,14 +1,20 @@
 package lu.uni.trux.difuzer;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import lu.uni.trux.difuzer.instrumentation.IfClassGenerator;
 import lu.uni.trux.difuzer.instrumentation.UnitGenerator;
+import lu.uni.trux.difuzer.utils.CommandLineOptions;
+import lu.uni.trux.difuzer.utils.Constants;
 import lu.uni.trux.difuzer.utils.Utils;
 import soot.Body;
+import soot.G;
+import soot.PackManager;
 import soot.PatchingChain;
 import soot.Scene;
 import soot.SootClass;
@@ -16,6 +22,7 @@ import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.AbstractStmtSwitch;
 import soot.jimple.IfStmt;
+import soot.options.Options;
 
 /*-
  * #%L
@@ -45,37 +52,61 @@ import soot.jimple.IfStmt;
 
 public class PreAnalysis {
 
-	private Logger logger = LoggerFactory.getLogger(Main.class);
+	CommandLineOptions options;
 
-	public PreAnalysis() {}
-	
-	public void processApp() {
+	private Logger logger = LoggerFactory.getLogger(PreAnalysis.class);
+
+	public PreAnalysis(CommandLineOptions o) {
+		this.options = o;
+	}
+
+	public String processApp() {
+		initializeSoot();
 		this.initializeNewClasses();
 		for(SootClass sc : Scene.v().getApplicationClasses()) {
 			if(!Utils.isSystemClass(sc.getName()) && sc.isConcrete()) {
-				for(SootMethod sm : sc.getMethods()) {
-					final Body b = sm.retrieveActiveBody();
-					if(sm.isConcrete()) {
-						final PatchingChain<Unit> units = b.getUnits();
-						for(Iterator<Unit> iter = units.snapshotIterator(); iter.hasNext();) {
-							final Unit u = iter.next();
-							u.apply(new AbstractStmtSwitch() {
-								public void caseIfStmt(IfStmt stmt) {
-									logger.debug(String.format("Generating if method for if statement: %s", stmt));
-									Unit newUnit = UnitGenerator.v().generateIfMethodCall(stmt);
-									units.insertBefore(newUnit, stmt);
-									b.validate();
-									logger.debug(String.format("If method successfully generated: %s", newUnit));
-								}
-							});
+				for(final SootMethod sm : sc.getMethods()) {
+					if(sm.isConcrete() && !sm.isPhantom()) {
+						final Body b = sm.retrieveActiveBody();
+						if(sm.isConcrete()) {
+							final PatchingChain<Unit> units = b.getUnits();
+							for(Iterator<Unit> iter = units.snapshotIterator(); iter.hasNext();) {
+								final Unit u = iter.next();
+								u.apply(new AbstractStmtSwitch() {
+									public void caseIfStmt(IfStmt stmt) {
+										logger.debug(String.format("Generating if method for if statement: %s", stmt));
+										Unit newUnit = UnitGenerator.v().generateIfMethodCall(stmt, sm);
+										units.insertBefore(newUnit, stmt);
+										b.validate();
+										logger.debug(String.format("If method successfully generated: %s", newUnit));
+									}
+								});
+							}
 						}
 					}
 				}
 			}
 		}
+		PackManager.v().writeOutput();
+		return String.format("%s/%s", Constants.TARGET_TMP_DIR, Utils.getBasename(this.options.getApk()));
 	}
 
 	private void initializeNewClasses() {
 		IfClassGenerator.v().generateClass();
+	}
+
+	private void initializeSoot() {
+		G.reset();
+		Options.v().set_src_prec(Options.src_prec_apk);
+		Options.v().set_output_format(Options.output_format_dex);
+		Options.v().set_allow_phantom_refs(true);
+		Options.v().set_whole_program(true);
+		Options.v().set_android_jars(this.options.getPlatforms());
+		List<String> apps = new ArrayList<String>();
+		apps.add(this.options.getApk());
+		Options.v().set_process_dir(apps);
+		Options.v().set_output_dir(Constants.TARGET_TMP_DIR);
+		Options.v().set_force_overwrite(true);
+		Scene.v().loadNecessaryClasses();
 	}
 }

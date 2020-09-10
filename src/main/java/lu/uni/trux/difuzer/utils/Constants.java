@@ -34,12 +34,13 @@ public class Constants {
 	 * Misc
 	 */
 	public static final String DIFUZER = "Difuzer";
-	public static final String IF_CLASS = "If";
+	public static final String IF_CLASS = "IfClass";
 	public static final String INIT = "<init>";
-	public static final String IF_METHOD = "if";
+	public static final String IF_METHOD = "ifMethod";
 	public static final String SOURCE = "_SOURCE_";
 	public static final String SINK = "_SINK_";
 	public static final String TARGET_TMP_DIR = String.format("%s%s%s", System.getProperty("java.io.tmpdir"), File.separator, "difuzer");
+	public static final String VOID = "void";
 
 	/**
 	 * Classes
@@ -50,5 +51,4 @@ public class Constants {
 	 * Methods
 	 */
 	public static final String INIT_METHOD_SUBSIG = "void <init>()";
-	public static final String IF_METHOD_SUBSIG = "void 'if'(java.lang.Object,java.lang.Object)";
 }

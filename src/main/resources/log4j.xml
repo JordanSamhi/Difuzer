@@ -4,7 +4,7 @@
     <appender name="STDOUT_DEBUG" class="org.apache.log4j.ConsoleAppender">
         <param name="threshold" value="debug"/>
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%5p [%t] (%d{dd MMM yyyy HH:mm:ss,SSS}) (%F:%L) - %m%n"/>
+            <param name="ConversionPattern" value="%5p [%t] (%d{dd MMM yyyy HH:mm:ss}) (%F:%L) - %m%n"/>
         </layout>
         <filter class="org.apache.log4j.varia.LevelRangeFilter">
        		<param name="levelMin" value="debug" />

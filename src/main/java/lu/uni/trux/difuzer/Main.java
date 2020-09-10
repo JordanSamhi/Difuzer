@@ -1,17 +1,7 @@
 package lu.uni.trux.difuzer;
 
-import java.io.File;
-import java.util.Arrays;
-
 import lu.uni.trux.difuzer.utils.CommandLineOptions;
-import soot.jimple.infoflow.InfoflowConfiguration.CallgraphAlgorithm;
-import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
-import soot.jimple.infoflow.android.SetupApplication;
-import soot.jimple.infoflow.results.InfoflowResults;
-import soot.jimple.infoflow.results.ResultSinkInfo;
-import soot.jimple.infoflow.results.ResultSourceInfo;
-import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;
-import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
+import lu.uni.trux.difuzer.utils.Utils;
 
 /*-
  * #%L
@@ -43,56 +33,12 @@ public class Main {
 	public static void main(String[] args) throws Throwable {
 		CommandLineOptions options = new CommandLineOptions(args);
 
-		// FLOWDROID CONFIG
-		InfoflowAndroidConfiguration ifac = new InfoflowAndroidConfiguration();
-		ifac.setIgnoreFlowsInSystemPackages(false);
-		ifac.getAnalysisFileConfig().setAndroidPlatformDir(options.getPlatforms());
-		ifac.getAnalysisFileConfig().setTargetAPKFile(options.getApk());
-		ifac.setCallgraphAlgorithm(CallgraphAlgorithm.CHA);
-		SetupApplication sa = new SetupApplication(ifac);
-		sa.constructCallgraph();
+		PreAnalysis pa = new PreAnalysis(options);
+		String newFilename = pa.processApp();
 
-		// INSTRUMENTATION
-
-		PreAnalysis pa = new PreAnalysis();
-		pa.processApp();
-
-		// TAINT WRAPPER
-
-		if(options.hasEasyTaintWrapperFile()) {
-			final ITaintPropagationWrapper taintWrapper;
-			EasyTaintWrapper easyTaintWrapper = null;
-			File twSourceFile = new File(options.getEasyTaintWrapperFile());
-			if (twSourceFile.exists())
-				easyTaintWrapper = new EasyTaintWrapper(twSourceFile);
-			else {
-				System.err.println("Taint wrapper definition file not found at "
-						+ twSourceFile.getAbsolutePath());
-			}
-			easyTaintWrapper.setAggressiveMode(true);
-			taintWrapper = easyTaintWrapper;
-			sa.setTaintWrapper(taintWrapper);
-		}
-
-		final InfoflowResults res = sa.runInfoflow(options.getSourcesSinksFile());
-
-		// PROCESS RESULTS
-
-		for (ResultSinkInfo sink : res.getResults().keySet()) {
-			if (ifac.getIccConfig().isIccEnabled() && ifac.getIccConfig().isIccResultsPurifyEnabled()) {
-				System.out.println("Found an ICC flow to sink " + sink + ", from the following sources:");
-			}
-			else {
-				System.out.println("Found a flow to sink " + sink + ", from the following sources:");
-			}
-
-			for (ResultSourceInfo source : res.getResults().get(sink)) {
-				System.out.println("\t- " + source + ")");
-				if (source.getPath() != null)
-					System.out.println("\t\ton Path " + Arrays.toString(source.getPath()));
-			}
-		}
-
-
+		FlowAnalysis fa = new  FlowAnalysis(options, newFilename);
+		fa.run();
+		
+		Utils.deleteFile(newFilename);
 	}
 }

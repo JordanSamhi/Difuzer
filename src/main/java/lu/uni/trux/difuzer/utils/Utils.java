@@ -1,5 +1,10 @@
 package lu.uni.trux.difuzer.utils;
 
+import java.io.File;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import soot.Body;
 import soot.Local;
 import soot.Scene;
@@ -35,6 +40,8 @@ import soot.jimple.Jimple;
 
 public class Utils {
 	
+	private static Logger logger = LoggerFactory.getLogger(Utils.class);
+	
 	private static int localNum = 0;
 
 	public static Local addLocal(Body b, Type t) {
@@ -63,5 +70,14 @@ public class Utils {
 				|| className.startsWith("sun.") || className.startsWith("org.omg.")
 				|| className.startsWith("org.w3c.dom.") || className.startsWith("com.google.")
 				|| className.startsWith("com.android."));
+	}
+
+	public static void deleteFile(String filename) {
+		File f = new File(filename);
+		if(f.delete()) { 
+			logger.info(String.format("%s successfully deleted", filename));
+		} else { 
+			logger.info(String.format("Failed to delete %s", filename));
+		} 
 	}
 }
