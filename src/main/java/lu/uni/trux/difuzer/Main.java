@@ -1,7 +1,6 @@
 package lu.uni.trux.difuzer;
 
 import lu.uni.trux.difuzer.utils.CommandLineOptions;
-import lu.uni.trux.difuzer.utils.Utils;
 
 /*-
  * #%L
@@ -33,12 +32,7 @@ public class Main {
 	public static void main(String[] args) throws Throwable {
 		CommandLineOptions options = new CommandLineOptions(args);
 
-		PreAnalysis pa = new PreAnalysis(options);
-		String newFilename = pa.processApp();
-
-		FlowAnalysis fa = new  FlowAnalysis(options, newFilename);
+		FlowAnalysis fa = new  FlowAnalysis(options);
 		fa.run();
-		
-		Utils.deleteFile(newFilename);
 	}
 }

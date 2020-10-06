@@ -1,13 +1,19 @@
 package lu.uni.trux.difuzer.utils;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import soot.Body;
 import soot.Local;
 import soot.Scene;
+import soot.SootClass;
 import soot.SootMethodRef;
 import soot.Type;
 import soot.jimple.Jimple;
@@ -59,9 +65,11 @@ public class Utils {
 	}
 	
 	public static String getBasename(String path) {
-		String[] split = path.split("/");
-		String filename = split[split.length - 1];
-		return filename;
+		return String.format("%s.%s", FilenameUtils.getBaseName(path), FilenameUtils.getExtension(path));
+	}
+	
+	public static String getBasenameWithoutExtension(String path) {
+		return FilenameUtils.getBaseName(path);
 	}
 
 	// Inspired by Flowdroid
@@ -69,7 +77,7 @@ public class Utils {
 		return (className.startsWith("android.") || className.startsWith("java.") || className.startsWith("javax.")
 				|| className.startsWith("sun.") || className.startsWith("org.omg.")
 				|| className.startsWith("org.w3c.dom.") || className.startsWith("com.google.")
-				|| className.startsWith("com.android."));
+				|| className.startsWith("com.android.") || className.startsWith("com.android."));
 	}
 
 	public static void deleteFile(String filename) {
@@ -79,5 +87,31 @@ public class Utils {
 		} else { 
 			logger.info(String.format("Failed to delete %s", filename));
 		} 
+	}
+	
+	public static boolean isLibrary(SootClass sc) {
+		InputStream fis = null;
+		BufferedReader br = null;
+		String line = null;
+		try {
+			fis = Utils.class.getResourceAsStream(Constants.LIBRARIES_FILE);
+			br = new BufferedReader(new InputStreamReader(fis));
+			while ((line = br.readLine()) != null)   {
+				if(sc.getName().startsWith(line)) {
+					br.close();
+					fis.close();
+					return true;
+				}
+			}
+		} catch (IOException e) {
+			logger.error(e.getMessage());
+		}
+		try {
+			br.close();
+			fis.close();
+		} catch (IOException e) {
+			logger.error(e.getMessage());
+		}
+		return false;
 	}
 }

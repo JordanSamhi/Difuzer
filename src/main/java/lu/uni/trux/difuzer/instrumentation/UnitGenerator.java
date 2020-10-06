@@ -44,6 +44,7 @@ public class UnitGenerator {
 		args.addAll(locals);
 		
 		String if_sig = String.format("%s %s(%s)", Constants.VOID, Constants.IF_METHOD, String.join(",", Collections.nCopies(args.size(), Constants.JAVA_LANG_OBJECT)));
+		
 		IfClassGenerator.v().generateIfMethod(args.size());
 		
 		Unit u = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(

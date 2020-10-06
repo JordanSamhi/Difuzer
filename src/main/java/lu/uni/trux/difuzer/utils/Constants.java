@@ -51,4 +51,5 @@ public class Constants {
 	 * Methods
 	 */
 	public static final String INIT_METHOD_SUBSIG = "void <init>()";
+	public static final String LIBRARIES_FILE = "/libraries.txt";
 }

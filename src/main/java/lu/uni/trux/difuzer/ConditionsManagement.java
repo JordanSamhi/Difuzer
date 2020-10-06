@@ -1,20 +1,14 @@
 package lu.uni.trux.difuzer;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import lu.uni.trux.difuzer.instrumentation.IfClassGenerator;
 import lu.uni.trux.difuzer.instrumentation.UnitGenerator;
-import lu.uni.trux.difuzer.utils.CommandLineOptions;
-import lu.uni.trux.difuzer.utils.Constants;
 import lu.uni.trux.difuzer.utils.Utils;
 import soot.Body;
-import soot.G;
-import soot.PackManager;
 import soot.PatchingChain;
 import soot.Scene;
 import soot.SootClass;
@@ -22,7 +16,6 @@ import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.AbstractStmtSwitch;
 import soot.jimple.IfStmt;
-import soot.options.Options;
 
 /*-
  * #%L
@@ -50,21 +43,15 @@ import soot.options.Options;
  * #L%
  */
 
-public class PreAnalysis {
+public class ConditionsManagement {
 
-	CommandLineOptions options;
+	private Logger logger = LoggerFactory.getLogger(ConditionsManagement.class);
 
-	private Logger logger = LoggerFactory.getLogger(PreAnalysis.class);
-
-	public PreAnalysis(CommandLineOptions o) {
-		this.options = o;
-	}
-
-	public String processApp() {
+	public void processApp() {
 		initializeSoot();
 		this.initializeNewClasses();
 		for(SootClass sc : Scene.v().getApplicationClasses()) {
-			if(!Utils.isSystemClass(sc.getName()) && sc.isConcrete()) {
+			if(!Utils.isSystemClass(sc.getName()) && sc.isConcrete() && !Utils.isLibrary(sc)) {
 				for(final SootMethod sm : sc.getMethods()) {
 					if(sm.isConcrete() && !sm.isPhantom()) {
 						final Body b = sm.retrieveActiveBody();
@@ -87,8 +74,6 @@ public class PreAnalysis {
 				}
 			}
 		}
-		PackManager.v().writeOutput();
-		return String.format("%s/%s", Constants.TARGET_TMP_DIR, Utils.getBasename(this.options.getApk()));
 	}
 
 	private void initializeNewClasses() {
@@ -96,17 +81,6 @@ public class PreAnalysis {
 	}
 
 	private void initializeSoot() {
-		G.reset();
-		Options.v().set_src_prec(Options.src_prec_apk);
-		Options.v().set_output_format(Options.output_format_dex);
-		Options.v().set_allow_phantom_refs(true);
-		Options.v().set_whole_program(true);
-		Options.v().set_android_jars(this.options.getPlatforms());
-		List<String> apps = new ArrayList<String>();
-		apps.add(this.options.getApk());
-		Options.v().set_process_dir(apps);
-		Options.v().set_output_dir(Constants.TARGET_TMP_DIR);
-		Options.v().set_force_overwrite(true);
 		Scene.v().loadNecessaryClasses();
 	}
 }
