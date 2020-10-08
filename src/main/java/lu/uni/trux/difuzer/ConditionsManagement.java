@@ -5,8 +5,10 @@ import java.util.Iterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import heros.InterproceduralCFG;
 import lu.uni.trux.difuzer.instrumentation.IfClassGenerator;
 import lu.uni.trux.difuzer.instrumentation.UnitGenerator;
+import lu.uni.trux.difuzer.utils.CommandLineOptions;
 import lu.uni.trux.difuzer.utils.Utils;
 import soot.Body;
 import soot.PatchingChain;
@@ -16,6 +18,8 @@ import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.AbstractStmtSwitch;
 import soot.jimple.IfStmt;
+import soot.jimple.Stmt;
+import soot.jimple.infoflow.ipc.IIPCManager;
 
 /*-
  * #%L
@@ -43,15 +47,26 @@ import soot.jimple.IfStmt;
  * #L%
  */
 
-public class ConditionsManagement {
+public class ConditionsManagement implements IIPCManager{
+
+	CommandLineOptions options;
 
 	private Logger logger = LoggerFactory.getLogger(ConditionsManagement.class);
 
-	public void processApp() {
-		initializeSoot();
+	private void initializeNewClasses() {
+		IfClassGenerator.v().generateClass();
+	}
+
+	@Override
+	public boolean isIPC(Stmt sCallSite, InterproceduralCFG<Unit, SootMethod> cfg) {
+		return false;
+	}
+
+	@Override
+	public void updateJimpleForICC() {
 		this.initializeNewClasses();
 		for(SootClass sc : Scene.v().getApplicationClasses()) {
-			if(!Utils.isSystemClass(sc.getName()) && sc.isConcrete() && !Utils.isLibrary(sc)) {
+			if(!Utils.isSystemClass(sc.getName()) && sc.isConcrete()) {
 				for(final SootMethod sm : sc.getMethods()) {
 					if(sm.isConcrete() && !sm.isPhantom()) {
 						final Body b = sm.retrieveActiveBody();
@@ -74,13 +89,5 @@ public class ConditionsManagement {
 				}
 			}
 		}
-	}
-
-	private void initializeNewClasses() {
-		IfClassGenerator.v().generateClass();
-	}
-
-	private void initializeSoot() {
-		Scene.v().loadNecessaryClasses();
 	}
 }
