@@ -77,12 +77,14 @@ public class ConditionsManagement implements IIPCManager{
 									final Unit u = iter.next();
 									u.apply(new AbstractStmtSwitch() {
 										public void caseIfStmt(IfStmt stmt) {
-											logger.debug(String.format("Generating if method for if statement: %s", stmt));
 											Unit newUnit = UnitGenerator.v().generateIfMethodCall(stmt, sm);
-											units.insertBefore(newUnit, stmt);
-											b.validate();
-											logger.debug(String.format("If method successfully generated: %s", newUnit));
-											ResultsAccumulator.v().incrementIfCount();
+											if(newUnit != null) {
+												logger.debug(String.format("Generating if method for if statement: %s", stmt));
+												units.insertBefore(newUnit, stmt);
+												b.validate();
+												logger.debug(String.format("If method successfully generated: %s", newUnit));
+												ResultsAccumulator.v().incrementIfCount();
+											}
 										}
 									});
 								}

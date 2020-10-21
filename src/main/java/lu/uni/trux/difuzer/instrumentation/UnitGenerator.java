@@ -31,6 +31,12 @@ public class UnitGenerator {
 		List<Value> args = new ArrayList<Value>();
 		Value op1 = condition.getOp1(),
 				op2 = condition.getOp2();
+		String symbol = condition.getSymbol();
+		
+		if((op1.toString().equals(Constants.NULL) || op2.toString().equals(Constants.NULL)) && (symbol.equals(Constants.EQUALS) || symbol.equals(Constants.DIFFERENT))) {
+			return null;
+		}
+		
 		LocalFinder lf = new LocalFinder(sm);
 		List<Value> locals = new ArrayList<Value>();
 		if(op1.toString().startsWith("$z")) {
