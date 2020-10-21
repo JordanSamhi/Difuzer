@@ -1,5 +1,7 @@
 package lu.uni.trux.difuzer;
 
+import java.util.List;
+
 import lu.uni.trux.difuzer.utils.CommandLineOptions;
 
 /*-
@@ -32,6 +34,7 @@ public class Main {
 	public static void main(String[] args) throws Throwable {
 		CommandLineOptions options = new CommandLineOptions(args);
 		FlowAnalysis fa = new  FlowAnalysis(options);
-		fa.run();
+		List<Trigger> triggers = fa.run();
+		ResultsAccumulator.v().printVectorResults();
 	}
 }

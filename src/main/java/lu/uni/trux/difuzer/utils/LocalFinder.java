@@ -16,7 +16,7 @@ import soot.toolkits.graph.BriefUnitGraph;
 
 public class LocalFinder {
 
-	SootMethod method;
+	private SootMethod method;
 
 	public LocalFinder(SootMethod sm) {
 		this.method = sm;

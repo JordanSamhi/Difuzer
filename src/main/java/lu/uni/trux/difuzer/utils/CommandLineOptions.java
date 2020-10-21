@@ -34,8 +34,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.javatuples.Triplet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class sets the different option for the application
@@ -54,8 +52,6 @@ public class CommandLineOptions {
 	private Options options, firstOptions;
 	private CommandLineParser parser;
 	private CommandLine cmdLine, cmdFirstLine;
-
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public CommandLineOptions(String[] args) {
 		this.options = new Options();
