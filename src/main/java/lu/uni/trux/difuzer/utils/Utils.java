@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -45,10 +47,11 @@ import soot.jimple.Jimple;
  */
 
 public class Utils {
-	
+
 	private static Logger logger = LoggerFactory.getLogger(Utils.class);
-	
+
 	private static int localNum = 0;
+	private static List<String> libraries = null;
 
 	public static Local addLocal(Body b, Type t) {
 		Local l = Jimple.v().newLocal(getNextLocalName(), t);
@@ -63,11 +66,11 @@ public class Utils {
 	private static String getNextLocalName() {
 		return "loc"  + localNum++;
 	}
-	
+
 	public static String getBasename(String path) {
 		return String.format("%s.%s", FilenameUtils.getBaseName(path), FilenameUtils.getExtension(path));
 	}
-	
+
 	public static String getBasenameWithoutExtension(String path) {
 		return FilenameUtils.getBaseName(path);
 	}
@@ -77,7 +80,8 @@ public class Utils {
 		return (className.startsWith("android.") || className.startsWith("java.") || className.startsWith("javax.")
 				|| className.startsWith("sun.") || className.startsWith("org.omg.")
 				|| className.startsWith("org.w3c.dom.") || className.startsWith("com.google.")
-				|| className.startsWith("com.android.") || className.startsWith("com.android."));
+				|| className.startsWith("com.android.") || className.startsWith("com.android.")
+				|| className.startsWith("androidx."));
 	}
 
 	public static void deleteFile(String filename) {
@@ -88,8 +92,21 @@ public class Utils {
 			logger.info(String.format("Failed to delete %s", filename));
 		} 
 	}
-	
+
 	public static boolean isLibrary(SootClass sc) {
+		if(libraries == null) {
+			libraries = new ArrayList<String>();
+			loadLibraries();
+		}
+		for(String lib : libraries) {
+			if(sc.getName().startsWith(lib)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static void loadLibraries() {
 		InputStream fis = null;
 		BufferedReader br = null;
 		String line = null;
@@ -97,21 +114,12 @@ public class Utils {
 			fis = Utils.class.getResourceAsStream(Constants.LIBRARIES_FILE);
 			br = new BufferedReader(new InputStreamReader(fis));
 			while ((line = br.readLine()) != null)   {
-				if(sc.getName().startsWith(line)) {
-					br.close();
-					fis.close();
-					return true;
-				}
+				libraries.add(line);
 			}
-		} catch (IOException e) {
-			logger.error(e.getMessage());
-		}
-		try {
 			br.close();
 			fis.close();
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 		}
-		return false;
 	}
 }
