@@ -67,22 +67,25 @@ public class ConditionsManagement implements IIPCManager{
 		this.initializeNewClasses();
 		for(SootClass sc : Scene.v().getApplicationClasses()) {
 			if(!Utils.isSystemClass(sc.getName()) && sc.isConcrete()) {
-				for(final SootMethod sm : sc.getMethods()) {
-					if(sm.isConcrete() && !sm.isPhantom()) {
-						final Body b = sm.retrieveActiveBody();
-						if(sm.isConcrete()) {
-							final PatchingChain<Unit> units = b.getUnits();
-							for(Iterator<Unit> iter = units.snapshotIterator(); iter.hasNext();) {
-								final Unit u = iter.next();
-								u.apply(new AbstractStmtSwitch() {
-									public void caseIfStmt(IfStmt stmt) {
-										logger.debug(String.format("Generating if method for if statement: %s", stmt));
-										Unit newUnit = UnitGenerator.v().generateIfMethodCall(stmt, sm);
-										units.insertBefore(newUnit, stmt);
-										b.validate();
-										logger.debug(String.format("If method successfully generated: %s", newUnit));
-									}
-								});
+				if(!Utils.isLibrary(sc)) {
+					for(final SootMethod sm : sc.getMethods()) {
+						if(sm.isConcrete() && !sm.isPhantom()) {
+							final Body b = sm.retrieveActiveBody();
+							if(sm.isConcrete()) {
+								final PatchingChain<Unit> units = b.getUnits();
+								for(Iterator<Unit> iter = units.snapshotIterator(); iter.hasNext();) {
+									final Unit u = iter.next();
+									u.apply(new AbstractStmtSwitch() {
+										public void caseIfStmt(IfStmt stmt) {
+											logger.debug(String.format("Generating if method for if statement: %s", stmt));
+											Unit newUnit = UnitGenerator.v().generateIfMethodCall(stmt, sm);
+											units.insertBefore(newUnit, stmt);
+											b.validate();
+											logger.debug(String.format("If method successfully generated: %s", newUnit));
+											ResultsAccumulator.v().incrementIfCount();
+										}
+									});
+								}
 							}
 						}
 					}

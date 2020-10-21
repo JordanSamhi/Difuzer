@@ -5,10 +5,14 @@ import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xmlpull.v1.XmlPullParserException;
+import org.slf4j.profiler.StopWatch;
 
 import lu.uni.trux.difuzer.utils.CommandLineOptions;
-import redis.clients.jedis.Jedis;
+import lu.uni.trux.difuzer.utils.Utils;
+import soot.Scene;
+import soot.SootClass;
+import soot.SootMethod;
+import soot.Unit;
 import soot.jimple.infoflow.InfoflowConfiguration.CallgraphAlgorithm;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.android.SetupApplication;
@@ -16,6 +20,11 @@ import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.results.ResultSinkInfo;
 import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
+import soot.toolkits.graph.BriefUnitGraph;
+import soot.toolkits.graph.CytronDominanceFrontier;
+import soot.toolkits.graph.SimpleDominatorsFinder;
+import soot.toolkits.graph.UnitGraph;
+import soot.toolkits.graph.pdg.MHGDominatorTree;
 
 /*-
  * #%L
@@ -64,6 +73,9 @@ public class FlowAnalysis {
 		SetupApplication sa = new SetupApplication(ifac);
 		sa.setIpcManager(new ConditionsManagement());
 
+		StopWatch swAnalysis = new StopWatch("Analysis");
+		swAnalysis.start("Analysis");
+
 		// Taint wrapper
 		if(options.hasEasyTaintWrapperFile()) {
 			final ITaintPropagationWrapper taintWrapper;
@@ -87,20 +99,55 @@ public class FlowAnalysis {
 		InfoflowResults res = null;
 		try {
 			res = sa.runInfoflow();
-		} catch (IOException e) {
-			logger.error(e.getMessage());
-		} catch (XmlPullParserException e) {
+		} catch (Exception e) {
 			logger.error(e.getMessage());
 		}
-
 
 		// Process results
 		if(res != null) {
 			if(res.getResults() != null && !res.getResults().isEmpty()) {
 				for (ResultSinkInfo sink : res.getResults().keySet()) {
 					logger.info(String.format("Sensitive information found in condition : %s", sink));
+					ResultsAccumulator.v().incrementFlowCount();
 				}
 			}
 		}
+		swAnalysis.stop();
+		
+		ResultsAccumulator.v().setAnalysisElapsedTime(swAnalysis.elapsedTime());
+		ResultsAccumulator.v().setAppName(Utils.getBasenameWithoutExtension(this.options.getApk()));
+		ResultsAccumulator.v().printVectorResults();
+//
+//		SootClass sc = Scene.v().getSootClass("lu.uni.trux.tests.MainActivity");
+//		SootMethod sm = sc.getMethod("void toto(int)");
+//		Unit dom = null;
+//		Unit n = null;
+//		for(Unit u : sm.retrieveActiveBody().getUnits()) {
+//			if(u.toString().contains("return")) {
+//				n = u;
+//			}
+//			if(u.toString().contains("if $i0 < 9")) {
+//				dom = u;
+//			}
+//			if(u.toString().contains("alinvoke $r1.<java.io.PrintStream: void println(int)>(2)")) {
+//				System.out.println(u.hashCode());
+//			}
+//		}
+//		UnitGraph ug = new BriefUnitGraph(sm.retrieveActiveBody());
+//		System.out.println(sm.retrieveActiveBody());
+//		
+//		System.out.println("===============");
+//
+//		SimpleDominatorsFinder<Unit> pdf = new SimpleDominatorsFinder<Unit>(ug);
+//		System.out.println(dom);
+//		System.out.println(n);
+//		System.out.println(pdf.isDominatedBy(n, dom));
+//
+//		System.out.println("=================");
+//
+//		MHGDominatorTree<Unit> dt = new MHGDominatorTree<>(pdf);
+//		System.out.println(dt.isDominatorOf(dt.getDode(dom), dt.getDode(n)));
+//		CytronDominanceFrontier<Unit> cdf = new CytronDominanceFrontier<Unit>(dt);
+//		System.out.println(cdf.getDominanceFrontierOf(dt.getDode(dom)));
 	}
 }
