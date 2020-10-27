@@ -94,10 +94,7 @@ public class Utils {
 	}
 
 	public static boolean isLibrary(SootClass sc) {
-		if(libraries == null) {
-			libraries = new ArrayList<String>();
-			loadLibraries();
-		}
+		libraries = checkFile(Constants.LIBRARIES_FILE, libraries);
 		for(String lib : libraries) {
 			if(sc.getName().startsWith(lib)) {
 				return true;
@@ -105,16 +102,25 @@ public class Utils {
 		}
 		return false;
 	}
+	
+	public static List<String> checkFile(String file, List<String> list) {
+		if(list == null) {
+			List<String> l = new ArrayList<String>();
+			load(file, l);
+			return l;
+		}
+		return list;
+	}
 
-	private static void loadLibraries() {
+	private static void load(String file, List<String> list) {
 		InputStream fis = null;
 		BufferedReader br = null;
 		String line = null;
 		try {
-			fis = Utils.class.getResourceAsStream(Constants.LIBRARIES_FILE);
+			fis = Utils.class.getResourceAsStream(file);
 			br = new BufferedReader(new InputStreamReader(fis));
 			while ((line = br.readLine()) != null)   {
-				libraries.add(line);
+				list.add(line);
 			}
 			br.close();
 			fis.close();
