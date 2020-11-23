@@ -43,7 +43,6 @@ import org.javatuples.Triplet;
 public class CommandLineOptions {
 
 	private static final Triplet<String, String, String> APK = new Triplet<String, String, String>("apk", "a", "Apk file");
-	private static final Triplet<String, String, String> SSF = new Triplet<String, String, String>("ssf", "s", "Sources and Sinks file");
 	private static final Triplet<String, String, String> ETW = new Triplet<String, String, String>("etw", "e", "Easy Taint Wrapper file");
 	private static final Triplet<String, String, String> HELP = new Triplet<String, String, String>("help", "h", "Print this message");
 	private static final Triplet<String, String, String> PLATFORMS =
@@ -94,14 +93,6 @@ public class CommandLineOptions {
 				.required(true)
 				.build();
 		
-		final Option ssf = Option.builder(SSF.getValue1())
-				.longOpt(SSF.getValue0())
-				.desc(SSF.getValue2())
-				.hasArg(true)
-				.argName(SSF.getValue0())
-				.required(true)
-				.build();
-		
 		final Option etw = Option.builder(ETW.getValue1())
 				.longOpt(ETW.getValue0())
 				.desc(ETW.getValue2())
@@ -128,7 +119,6 @@ public class CommandLineOptions {
 
 		this.options.addOption(apk);
 		this.options.addOption(platforms);
-		this.options.addOption(ssf);
 		this.options.addOption(etw);
 
 		for(Option o : this.firstOptions.getOptions()) {
@@ -142,10 +132,6 @@ public class CommandLineOptions {
 
 	public String getPlatforms() {
 		return this.cmdLine.getOptionValue(PLATFORMS.getValue0());
-	}
-	
-	public String getSourcesSinksFile() {
-		return this.cmdLine.getOptionValue(SSF.getValue0());
 	}
 	
 	public String getEasyTaintWrapperFile() {

@@ -1,4 +1,4 @@
-package lu.uni.trux.difuzer;
+package lu.uni.trux.difuzer.triggers;
 
 import lu.uni.trux.difuzer.utils.Constants;
 import soot.Unit;

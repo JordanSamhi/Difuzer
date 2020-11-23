@@ -9,20 +9,4 @@
 <android.telephony.TelephonyManager: java.lang.String getSubscriberId()> android.permission.READ_PHONE_STATE -> _SOURCE_
 <android.telephony.TelephonyManager: java.lang.String getSimSerialNumber()> android.permission.READ_PHONE_STATE -> _SOURCE_
 <android.telephony.TelephonyManager: java.lang.String getLine1Number()> android.permission.READ_PHONE_STATE -> _SOURCE_
-
-<IfClass: void ifMethod(java.lang.Object)> -> _SINK_
-<IfClass: void ifMethod(java.lang.Object,java.lang.Object)> -> _SINK_
-<IfClass: void ifMethod(java.lang.Object,java.lang.Object,java.lang.Object)> -> _SINK_
-<IfClass: void ifMethod(java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object)> -> _SINK_
-<IfClass: void ifMethod(java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object)> -> _SINK_
-<IfClass: void ifMethod(java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object)> -> _SINK_
-<IfClass: void ifMethod(java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object)> -> _SINK_
-<IfClass: void ifMethod(java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object)> -> _SINK_
-<IfClass: void ifMethod(java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object)> -> _SINK_
-<IfClass: void ifMethod(java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object)> -> _SINK_
-<IfClass: void ifMethod(java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object)> -> _SINK_
-<IfClass: void ifMethod(java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object)> -> _SINK_
-<IfClass: void ifMethod(java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object)> -> _SINK_
-<IfClass: void ifMethod(java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object)> -> _SINK_
-<IfClass: void ifMethod(java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object)> -> _SINK_
-<IfClass: void ifMethod(java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object,java.lang.Object)> -> _SINK_<javax.servlet.ServletRequest: java.lang.String getParameter(java.lang.String)> -> _SOURCE_
+<javax.servlet.ServletRequest: java.lang.String getParameter(java.lang.String)> -> _SOURCE_

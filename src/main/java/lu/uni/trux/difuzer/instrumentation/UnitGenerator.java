@@ -1,13 +1,15 @@
 package lu.uni.trux.difuzer.instrumentation;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import lu.uni.trux.difuzer.utils.Constants;
 import lu.uni.trux.difuzer.utils.LocalFinder;
+import lu.uni.trux.difuzer.utils.SourcesSinksManager;
 import lu.uni.trux.difuzer.utils.Utils;
 import soot.SootMethod;
+import soot.SootMethodRef;
+import soot.Type;
 import soot.Unit;
 import soot.Value;
 import soot.jimple.ConditionExpr;
@@ -55,10 +57,12 @@ public class UnitGenerator {
 	public Unit generateIfMethodCall(IfStmt stmt, SootMethod sm) {
 		ConditionExpr condition = (ConditionExpr) stmt.getCondition();
 		List<Value> args = new ArrayList<Value>();
+		List<Type> types = new ArrayList<Type>();
 		Value op1 = condition.getOp1(),
 				op2 = condition.getOp2();
 		String symbol = condition.getSymbol();
 		
+		//TODO uncomment this
 		if((op1.toString().equals(Constants.NULL) || op2.toString().equals(Constants.NULL)) && (symbol.equals(Constants.EQUALS) || symbol.equals(Constants.DIFFERENT))) {
 			return null;
 		}
@@ -75,12 +79,15 @@ public class UnitGenerator {
 		args.add(op2);
 		args.addAll(locals);
 		
-		String if_sig = String.format("%s %s(%s)", Constants.VOID, Constants.IF_METHOD, String.join(",", Collections.nCopies(args.size(), Constants.JAVA_LANG_OBJECT)));
+		for(Value v : args) {
+			types.add(v.getType());
+		}
 		
-		IfClassGenerator.v().generateIfMethod(args.size());
-		
+		SootMethod newIfMethod = IfClassGenerator.v().generateIfMethod(types);
+		SootMethodRef ref = Utils.getMethodRef(Constants.IF_CLASS, newIfMethod.getSubSignature());
+		SourcesSinksManager.v().addSink(ref.resolve());
 		Unit u = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(
-				Utils.getMethodRef(Constants.IF_CLASS, if_sig), args));
+				ref, args));
 		return u;
 	}
 }

@@ -1,4 +1,4 @@
-package lu.uni.trux.difuzer;
+package lu.uni.trux.difuzer.triggers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +7,7 @@ import soot.Body;
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.IfStmt;
+import soot.jimple.Stmt;
 import soot.jimple.infoflow.solver.cfg.InfoflowCFG;
 import soot.toolkits.graph.BriefUnitGraph;
 import soot.toolkits.graph.SimpleDominatorsFinder;
@@ -44,10 +45,10 @@ public class Trigger {
 	protected InfoflowCFG icfg;
 	protected BriefUnitGraph graph;
 	protected IfStmt condition;
-	protected List<Unit> guardedStmts;
+	protected List<Stmt> guardedStmts;
 	
 	protected Trigger() {
-		this.setGuardedStmts(new ArrayList<Unit>());
+		this.setGuardedStmts(new ArrayList<Stmt>());
 	}
 	
 	public Trigger(IfStmt i, InfoflowCFG icfg) {
@@ -62,7 +63,7 @@ public class Trigger {
 		if(body != null) {
 			for(Unit u : body.getUnits()) {
 				if(pdf.isDominatedBy(u, condition) && !u.equals(condition)) {
-					this.guardedStmts.add(u);
+					this.guardedStmts.add((Stmt)u);
 				}
 			}
 		}
@@ -101,11 +102,11 @@ public class Trigger {
 		this.condition = condition;
 	}
 
-	public List<Unit> getGuardedStmts() {
+	public List<Stmt> getGuardedStmts() {
 		return guardedStmts;
 	}
 
-	public void setGuardedStmts(List<Unit> guardedStmts) {
+	public void setGuardedStmts(List<Stmt> guardedStmts) {
 		this.guardedStmts = guardedStmts;
 	}
 }

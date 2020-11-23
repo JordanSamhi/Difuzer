@@ -54,5 +54,11 @@ public class Constants {
 	 * Methods
 	 */
 	public static final String INIT_METHOD_SUBSIG = "void <init>()";
+	
+	/**
+	 * Files
+	 */
 	public static final String LIBRARIES_FILE = "/libraries.txt";
+	public static final String SENSITIVE_METHODS = "/sensitiveMethods.txt";
+	public static final String SOURCES_AND_SINKS_FILE = "/SourcesSinks.txt";
 }

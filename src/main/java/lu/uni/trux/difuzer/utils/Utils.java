@@ -53,7 +53,7 @@ public class Utils {
 	private static int localNum = 0;
 	private static List<String> libraries = null;
 
-	public static Local addLocal(Body b, Type t) {
+	public static Local addLocalToBody(Body b, Type t) {
 		Local l = Jimple.v().newLocal(getNextLocalName(), t);
 		b.getLocals().add(l);
 		return l;
@@ -102,7 +102,7 @@ public class Utils {
 		}
 		return false;
 	}
-	
+
 	public static List<String> checkFile(String file, List<String> list) {
 		if(list == null) {
 			List<String> l = new ArrayList<String>();
@@ -128,4 +128,30 @@ public class Utils {
 			logger.error(e.getMessage());
 		}
 	}
+
+	public static String getClassNameFromSignature(String sig) {
+		String tmp = sig.split(" ")[0];
+		return tmp.substring(1, tmp.length() - 1);
+	}
+
+	public static String getMethodNameFromSignature(String sig) {
+		String tmp = sig.split(" ")[2];
+		return tmp.substring(0, tmp.indexOf("("));
+	}
+
+	public static String getReturnNameFromSignature(String sig) {
+		return sig.split(" ")[1];
+	}
+
+	public static List<String> getParametersNamesFromSignature(String sig) {
+		String tmp = sig.split(" ")[2];
+		String params = tmp.substring(tmp.indexOf("("), tmp.indexOf(")") + 1);
+		String[] paramsArray = params.split(",");
+		List<String> parameters = new ArrayList<String>();
+		for(int i = 0 ; i < paramsArray.length ; i++) {
+			parameters.add(paramsArray[i]);
+		}
+		return parameters;
+	}
+
 }

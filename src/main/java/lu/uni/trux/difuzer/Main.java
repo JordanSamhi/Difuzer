@@ -2,6 +2,9 @@ package lu.uni.trux.difuzer;
 
 import java.util.List;
 
+import lu.uni.trux.difuzer.filters.FilterImpl;
+import lu.uni.trux.difuzer.filters.SensitiveMethodsFilter;
+import lu.uni.trux.difuzer.triggers.Trigger;
 import lu.uni.trux.difuzer.utils.CommandLineOptions;
 
 /*-
@@ -36,5 +39,8 @@ public class Main {
 		FlowAnalysis fa = new  FlowAnalysis(options);
 		List<Trigger> triggers = fa.run();
 		ResultsAccumulator.v().printVectorResults();
+		
+		FilterImpl filters = new SensitiveMethodsFilter(null, triggers);
+		filters.apply();
 	}
 }

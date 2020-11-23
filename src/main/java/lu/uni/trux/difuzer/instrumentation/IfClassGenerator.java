@@ -2,9 +2,7 @@ package lu.uni.trux.difuzer.instrumentation;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import lu.uni.trux.difuzer.utils.Constants;
 import lu.uni.trux.difuzer.utils.Utils;
@@ -49,10 +47,10 @@ public class IfClassGenerator {
 
 	private static IfClassGenerator instance;
 	private SootClass ifClass;
-	private Set<Integer> existingMethodsByArgs;
+	private List<List<Type>> typesManaged;
 
 	private IfClassGenerator() {
-		this.existingMethodsByArgs = new HashSet<Integer>();
+		this.typesManaged = new ArrayList<List<Type>>();
 	}
 
 	public static IfClassGenerator v() {
@@ -76,7 +74,7 @@ public class IfClassGenerator {
 		JimpleBody body = Jimple.v().newBody(sm);
 		sm.setActiveBody(body);
 		UnitPatchingChain units = body.getUnits();
-		Local thisLocal = Utils.addLocal(body, RefType.v(Constants.IF_CLASS));
+		Local thisLocal = Utils.addLocalToBody(body, RefType.v(Constants.IF_CLASS));
 		units.add(Jimple.v().newIdentityStmt(thisLocal, Jimple.v().newThisRef(RefType.v(Constants.IF_CLASS))));
 		units.add(Jimple.v().newInvokeStmt(
 				Jimple.v().newSpecialInvokeExpr(thisLocal,
@@ -86,79 +84,28 @@ public class IfClassGenerator {
 		this.ifClass.addMethod(sm);
 	}
 
-	public void generateIfMethod(int i) {
-		if(!this.existingMethodsByArgs.contains(i)) {
-			List<Type> args = new ArrayList<Type>();
-			Local[] locals = new Local[i];
-			for(int j = 0 ; j < i ; j++) {
-				args.add(RefType.v(Constants.JAVA_LANG_OBJECT));
-			}
+	public SootMethod generateIfMethod(List<Type> types) {
+		if(!this.typesManaged.contains(types)) {
+			List<Local> locals = new ArrayList<Local>();
 			SootMethod sm = new SootMethod(Constants.IF_METHOD,
-					args, VoidType.v(), Modifier.PUBLIC | Modifier.STATIC);
+					types, VoidType.v(), Modifier.PUBLIC | Modifier.STATIC);
 			JimpleBody body = Jimple.v().newBody(sm);
 			sm.setActiveBody(body);
 			UnitPatchingChain units = body.getUnits();
-			for(int j = 0 ; j < i ; j++) {
-				locals[j] = Utils.addLocal(body, RefType.v(Constants.JAVA_LANG_OBJECT));
+			for(Type t: types) {
+				locals.add(Utils.addLocalToBody(body, t));
 			}
-			for(int j = 0 ; j < i ; j++) {
-				units.add(Jimple.v().newIdentityStmt(locals[j],
-						Jimple.v().newParameterRef(RefType.v(Constants.JAVA_LANG_OBJECT), j)));
+			
+			for(int i = 0 ; i < locals.size() ; i++) {
+				units.add(Jimple.v().newIdentityStmt(locals.get(i),
+						Jimple.v().newParameterRef(locals.get(i).getType(), i)));
 			}
 			units.add(Jimple.v().newReturnVoidStmt());
 			body.validate();
 			this.ifClass.addMethod(sm);
-			this.existingMethodsByArgs.add(i);
+			this.typesManaged.add(types);
+			return sm;
 		}
+		return this.ifClass.getMethod(Constants.IF_METHOD, types);
 	}
-
-	//	public void generateClass() {
-	//		this.ifClass = new SootClass(Constants.IF_CLASS, Modifier.PUBLIC);
-	//		this.ifClass.setSuperclass(Scene.v().getSootClass(Constants.JAVA_LANG_OBJECT));
-	//		Scene.v().addClass(this.ifClass);
-	//		this.ifClass.setApplicationClass();
-	//		this.generateInitMethod();
-	//		for(int i = 0 ; i < 10 ; i ++) {
-	//			this.generateIfMethod(i);
-	//		}
-	//	}
-	//
-	//	private void generateInitMethod() {
-	//		SootMethod sm = new SootMethod(Constants.INIT,
-	//				new ArrayList<Type>(), VoidType.v(), Modifier.PUBLIC);
-	//		JimpleBody body = Jimple.v().newBody(sm);
-	//		sm.setActiveBody(body);
-	//		UnitPatchingChain units = body.getUnits();
-	//		Local thisLocal = Utils.addLocal(body, RefType.v(Constants.IF_CLASS));
-	//		units.add(Jimple.v().newIdentityStmt(thisLocal, Jimple.v().newThisRef(RefType.v(Constants.IF_CLASS))));
-	//		units.add(Jimple.v().newInvokeStmt(
-	//				Jimple.v().newSpecialInvokeExpr(thisLocal,
-	//						Utils.getMethodRef(Constants.JAVA_LANG_OBJECT, Constants.INIT_METHOD_SUBSIG))));
-	//		units.add(Jimple.v().newReturnVoidStmt());
-	//		body.validate();
-	//		this.ifClass.addMethod(sm);
-	//	}
-	//
-	//	private void generateIfMethod(int i) {
-	//		List<Type> args = new ArrayList<Type>();
-	//		Local[] locals = new Local[i];
-	//		for(int j = 0 ; j < i ; j++) {
-	//			args.add(RefType.v(Constants.JAVA_LANG_OBJECT));
-	//		}
-	//		SootMethod sm = new SootMethod(Constants.IF_METHOD,
-	//				args, VoidType.v(), Modifier.PUBLIC | Modifier.STATIC);
-	//		JimpleBody body = Jimple.v().newBody(sm);
-	//		sm.setActiveBody(body);
-	//		UnitPatchingChain units = body.getUnits();
-	//		for(int j = 0 ; j < i ; j++) {
-	//			locals[j] = Utils.addLocal(body, RefType.v(Constants.JAVA_LANG_OBJECT));
-	//		}
-	//		for(int j = 0 ; j < i ; j++) {
-	//			units.add(Jimple.v().newIdentityStmt(locals[j],
-	//					Jimple.v().newParameterRef(RefType.v(Constants.JAVA_LANG_OBJECT), j)));
-	//		}
-	//		units.add(Jimple.v().newReturnVoidStmt());
-	//		body.validate();
-	//		this.ifClass.addMethod(sm);
-	//	}
 }
