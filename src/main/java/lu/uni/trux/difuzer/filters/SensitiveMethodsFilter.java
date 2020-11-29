@@ -31,12 +31,16 @@ public class SensitiveMethodsFilter extends FilterImpl {
 				if(stmt.containsInvokeExpr()) {
 					sm = stmt.getInvokeExpr().getMethod();
 					found = this.checkMethod(sm);
-					System.out.println(found);
-					if(sm.toString().contains("sendText"))
-						System.out.println(sm);
+					if(found) {
+						break;
+					}
 				}
 			}
+			if(!found) {
+				triggersToRemove.add(t);
+			}
 		}
+		this.filterTriggers(triggersToRemove);
 	}
 
 	private boolean checkMethod(SootMethod targetMethod) {

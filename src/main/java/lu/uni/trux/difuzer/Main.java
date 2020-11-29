@@ -43,5 +43,8 @@ public class Main {
 		
 		FilterImpl filters = new SensitiveMethodsFilter(null, triggers);
 		filters.apply();
+		for(Trigger t: triggers) {
+			System.out.println(t);
+		}
 	}
 }

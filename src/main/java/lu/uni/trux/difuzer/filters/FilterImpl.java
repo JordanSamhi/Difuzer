@@ -21,4 +21,9 @@ public abstract class FilterImpl implements Filter {
 			this.next.apply();
 		}
 	}
+	
+	@Override
+	public void filterTriggers(List<Trigger> triggers) {
+		this.triggers.removeAll(triggers);
+	}
 }
