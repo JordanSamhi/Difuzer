@@ -31,7 +31,7 @@ import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
  * Difuzer
  * 
  * %%
- * Copyright (C) 2020 Jordan Samhi
+ * Copyright (C) 2021 Jordan Samhi
  * University of Luxembourg - Interdisciplinary Centre for
  * Security Reliability and Trust (SnT) - TruX - All rights reserved
  *
