@@ -60,5 +60,5 @@ public class Constants {
 	 */
 	public static final String LIBRARIES_FILE = "/libraries.txt";
 	public static final String SENSITIVE_METHODS_FILE = "/sensitiveMethods.txt";
-	public static final String SOURCES_AND_SINKS_FILE = "/SourcesSinks.txt";
+	public static final String SOURCES_FILE = "/Sources.txt";
 }

@@ -80,8 +80,7 @@ public class Utils {
 		return (className.startsWith("android.") || className.startsWith("java.") || className.startsWith("javax.")
 				|| className.startsWith("sun.") || className.startsWith("org.omg.")
 				|| className.startsWith("org.w3c.dom.") || className.startsWith("com.google.")
-				|| className.startsWith("com.android.") || className.startsWith("com.android.")
-				|| className.startsWith("androidx."));
+				|| className.startsWith("com.android.") || className.startsWith("androidx."));
 	}
 
 	public static void deleteFile(String filename) {

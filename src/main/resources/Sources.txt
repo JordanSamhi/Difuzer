@@ -1,0 +1,12 @@
+<android.telephony.SmsMessage: java.lang.String getMessageBody()>
+<android.telephony.SmsMessage: java.lang.String getOriginatingAddress()>
+<android.telephony.SmsMessage: java.lang.String getDisplayMessageBody()>
+<android.telephony.SmsMessage: java.lang.String getDisplayOriginatingAddress()>
+<android.location.Location: double getLatitude()>
+<android.location.Location: double getLongitude()>
+<android.location.LocationManager: android.location.Location getLastKnownLocation(java.lang.String)>
+<android.telephony.TelephonyManager: java.lang.String getDeviceId()>
+<android.telephony.TelephonyManager: java.lang.String getSubscriberId()>
+<android.telephony.TelephonyManager: java.lang.String getSimSerialNumber()>
+<android.telephony.TelephonyManager: java.lang.String getLine1Number()>
+<javax.servlet.ServletRequest: java.lang.String getParameter(java.lang.String)>

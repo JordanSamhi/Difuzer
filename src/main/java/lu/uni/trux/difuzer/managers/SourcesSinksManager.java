@@ -1,9 +1,5 @@
 package lu.uni.trux.difuzer.managers;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -39,15 +35,15 @@ import soot.jimple.infoflow.android.data.AndroidMethod;
  */
 
 public class SourcesSinksManager {
-	
+
 	private static SourcesSinksManager instance;
 	private Set<AndroidMethod> sources;
 	private Set<AndroidMethod> sinks;
-	
+
 	private SourcesSinksManager () {
 		this.sources = new HashSet<AndroidMethod>();
 		this.sinks = new HashSet<AndroidMethod>();
-		this.loadSourcesSinksFromFile();
+		this.loadSources(Utils.loadFile(Constants.SOURCES_FILE));
 	}
 
 	public static SourcesSinksManager v() {
@@ -56,40 +52,13 @@ public class SourcesSinksManager {
 		}
 		return instance;
 	}
-	
-	private void loadSourcesSinksFromFile() {
-		InputStream fis = null;
-		BufferedReader br = null;
-		String line = null;
-		try {
-			fis = this.getClass().getResourceAsStream(Constants.SOURCES_AND_SINKS_FILE);
-			br = new BufferedReader(new InputStreamReader(fis));
-			while ((line = br.readLine()) != null) {
-				String[] split = line.split(" -> ");
-				if(split.length == 2) {
-					String method = split[0];
-					String type = split[1];
-					if(type.equals(Constants.SOURCE)) {
-						this.sources.add(new AndroidMethod(Utils.getMethodNameFromSignature(method),
-								Utils.getParametersNamesFromSignature(method),
-								Utils.getReturnNameFromSignature(method),
-								Utils.getClassNameFromSignature(method)));
-					}else if(type.equals(Constants.SINK)) {
-						this.sinks.add(new AndroidMethod(Utils.getMethodNameFromSignature(method),
-						Utils.getParametersNamesFromSignature(method),
-						Utils.getReturnNameFromSignature(method),
-						Utils.getClassNameFromSignature(method)));
-					}
-				}
-			}
-		} catch (IOException e) {
-			System.err.println(e.getMessage());
-		}
-		try {
-			br.close();
-			fis.close();
-		} catch (IOException e) {
-			System.err.println(e.getMessage());
+
+	private void loadSources(Set<String> sources) {
+		for(String source: sources){
+			this.sources.add(new AndroidMethod(Utils.getMethodNameFromSignature(source),
+					Utils.getParametersNamesFromSignature(source),
+					Utils.getReturnNameFromSignature(source),
+					Utils.getClassNameFromSignature(source)));
 		}
 	}
 
