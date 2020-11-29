@@ -6,6 +6,7 @@ import java.util.List;
 
 import lu.uni.trux.difuzer.managers.SensitiveMethodsManager;
 import lu.uni.trux.difuzer.triggers.Trigger;
+import lu.uni.trux.difuzer.triggers.TriggerIfCall;
 import soot.Body;
 import soot.PatchingChain;
 import soot.Scene;
@@ -16,8 +17,8 @@ import soot.jimple.toolkits.callgraph.Edge;
 
 public class SensitiveMethodsFilter extends FilterImpl {
 
-	public SensitiveMethodsFilter(FilterImpl n, List<Trigger> t) {
-		super(n, t);
+	public SensitiveMethodsFilter(FilterImpl n, List<TriggerIfCall> triggers) {
+		super(n, triggers);
 	}
 
 	@Override

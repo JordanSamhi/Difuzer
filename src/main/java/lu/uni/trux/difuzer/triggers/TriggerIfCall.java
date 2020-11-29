@@ -1,6 +1,9 @@
 package lu.uni.trux.difuzer.triggers;
 
+import java.util.List;
+
 import lu.uni.trux.difuzer.utils.Constants;
+import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.IfStmt;
 import soot.jimple.InvokeStmt;
@@ -34,13 +37,16 @@ import soot.jimple.infoflow.solver.cfg.InfoflowCFG;
 
 public class TriggerIfCall extends Trigger {
 
-	public TriggerIfCall(Unit u, InfoflowCFG icfg) {
+	private List<SootMethod> sources;
+	
+	public TriggerIfCall(Unit u, InfoflowCFG icfg, List<SootMethod> sources) {
 		super();
 		this.setIcfg(icfg);
 		IfStmt i = this.generateCondition(u, icfg);
 		this.setCondition(i);
 		this.generateGraph();
 		this.generateGuardedStmts();
+		this.setSources(sources);
 	}
 
 	private IfStmt generateCondition(Unit u, InfoflowCFG icfg) {
@@ -55,5 +61,13 @@ public class TriggerIfCall extends Trigger {
 			}
 		}
 		return null;
+	}
+
+	public List<SootMethod> getSources() {
+		return sources;
+	}
+
+	public void setSources(List<SootMethod> sources) {
+		this.sources = sources;
 	}
 }

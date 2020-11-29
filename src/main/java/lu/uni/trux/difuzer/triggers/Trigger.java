@@ -109,4 +109,12 @@ public class Trigger {
 	public void setGuardedStmts(List<Stmt> guardedStmts) {
 		this.guardedStmts = guardedStmts;
 	}
+
+	public SootMethod getMethod() {
+		return method;
+	}
+
+	public void setMethod(SootMethod method) {
+		this.method = method;
+	}
 }

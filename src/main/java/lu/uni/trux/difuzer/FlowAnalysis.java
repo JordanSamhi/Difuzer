@@ -10,10 +10,10 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.profiler.StopWatch;
 
 import lu.uni.trux.difuzer.managers.SourcesSinksManager;
-import lu.uni.trux.difuzer.triggers.Trigger;
 import lu.uni.trux.difuzer.triggers.TriggerIfCall;
 import lu.uni.trux.difuzer.utils.CommandLineOptions;
 import lu.uni.trux.difuzer.utils.Utils;
+import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.infoflow.InfoflowConfiguration.CallgraphAlgorithm;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
@@ -21,6 +21,7 @@ import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.SootIntegration
 import soot.jimple.infoflow.android.SetupApplication;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.results.ResultSinkInfo;
+import soot.jimple.infoflow.results.ResultSourceInfo;
 import soot.jimple.infoflow.solver.cfg.InfoflowCFG;
 import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
@@ -61,7 +62,7 @@ public class FlowAnalysis {
 		this.options = o;
 	}
 
-	public List<Trigger> run() {
+	public List<TriggerIfCall> run() {
 		InfoflowAndroidConfiguration ifac = new InfoflowAndroidConfiguration();
 		ifac.setIgnoreFlowsInSystemPackages(false);
 		ifac.getAnalysisFileConfig().setAndroidPlatformDir(this.options.getPlatforms());
@@ -95,31 +96,36 @@ public class FlowAnalysis {
 			sa.setTaintWrapper(taintWrapper);
 		}
 
-		InfoflowResults res = null;
+		InfoflowResults results = null;
 		try {
-			res = sa.runInfoflow(SourcesSinksManager.v().getSources(), SourcesSinksManager.v().getSinks());
+			results = sa.runInfoflow(SourcesSinksManager.v().getSources(), SourcesSinksManager.v().getSinks());
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 		}
 		
-		List<Trigger> triggers = new ArrayList<Trigger>();
+		List<TriggerIfCall> triggers = new ArrayList<TriggerIfCall>();
 		InfoflowCFG icfg = new InfoflowCFG();
 		Unit u = null;
+		List<SootMethod> sources = null;
 
-		if(res != null) {
-			if(res.getResults() != null && !res.getResults().isEmpty()) {
-				for (ResultSinkInfo sink : res.getResults().keySet()) {
+		if(results != null) {
+			if(results.getResults() != null && !results.getResults().isEmpty()) {
+				for (ResultSinkInfo sink : results.getResults().keySet()) {
+					sources = new ArrayList<SootMethod>();
 					logger.info(String.format("Sensitive information found in condition : %s", sink));
-					ResultsAccumulator.v().incrementFlowCount();
+					for (ResultSourceInfo source : results.getResults().get(sink)) {
+						sources.add(source.getStmt().getInvokeExpr().getMethod());
+					}
+					ResultsAccumulator.v().incrementFlowsCount();
 					u = sink.getStmt();
-					triggers.add(new TriggerIfCall(u, icfg));
+					triggers.add(new TriggerIfCall(u, icfg, sources));
 				}
 			}
 		}
 		
 		swAnalysis.stop();
 
-		ResultsAccumulator.v().setAnalysisElapsedTime(swAnalysis.elapsedTime());
+		ResultsAccumulator.v().setAnalysisElapsedTime((int) (swAnalysis.elapsedTime() / 1000000000));
 		ResultsAccumulator.v().setAppName(Utils.getBasenameWithoutExtension(this.options.getApk()));
 		return triggers;
 	}

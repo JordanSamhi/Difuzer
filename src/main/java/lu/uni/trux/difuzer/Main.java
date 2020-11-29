@@ -4,7 +4,7 @@ import java.util.List;
 
 import lu.uni.trux.difuzer.filters.FilterImpl;
 import lu.uni.trux.difuzer.filters.SensitiveMethodsFilter;
-import lu.uni.trux.difuzer.triggers.Trigger;
+import lu.uni.trux.difuzer.triggers.TriggerIfCall;
 import lu.uni.trux.difuzer.utils.CommandLineOptions;
 
 /*-
@@ -37,14 +37,13 @@ public class Main {
 	public static void main(String[] args) throws Throwable {
 		CommandLineOptions options = new CommandLineOptions(args);
 		FlowAnalysis fa = new  FlowAnalysis(options);
-		List<Trigger> triggers = fa.run();
-		ResultsAccumulator.v().printVectorResults();
-		
+		List<TriggerIfCall> triggers = fa.run();
 		
 		FilterImpl filters = new SensitiveMethodsFilter(null, triggers);
 		filters.apply();
-		for(Trigger t: triggers) {
-			System.out.println(t);
-		}
+		
+		ResultsAccumulator.v().setTriggersFound(triggers);
+		ResultsAccumulator.v().printVectorResults();
+		ResultsAccumulator.v().printTriggersResults();
 	}
 }
