@@ -71,6 +71,7 @@ public class CommandLineOptions {
 	private static final Triplet<String, String, String> APK = new Triplet<String, String, String>("apk", "a", "Apk file");
 	private static final Triplet<String, String, String> ETW = new Triplet<String, String, String>("etw", "e", "Easy Taint Wrapper file");
 	private static final Triplet<String, String, String> HELP = new Triplet<String, String, String>("help", "h", "Print this message");
+	private static final Triplet<String, String, String> TIMEOUT = new Triplet<String, String, String>("timeout", "t", "Set the timeout for analysis");
 	private static final Triplet<String, String, String> PLATFORMS =
 			new Triplet<String, String, String>("platforms", "p", "Android platforms folder");
 
@@ -126,6 +127,14 @@ public class CommandLineOptions {
 				.argName(ETW.getValue0())
 				.required(false)
 				.build();
+		
+		final Option to = Option.builder(TIMEOUT.getValue1())
+				.longOpt(TIMEOUT.getValue0())
+				.desc(TIMEOUT.getValue2())
+				.hasArg(true)
+				.argName(TIMEOUT.getValue0())
+				.required(false)
+				.build();
 
 		final Option platforms = Option.builder(PLATFORMS.getValue1())
 				.longOpt(PLATFORMS.getValue0())
@@ -146,6 +155,7 @@ public class CommandLineOptions {
 		this.options.addOption(apk);
 		this.options.addOption(platforms);
 		this.options.addOption(etw);
+		this.options.addOption(to);
 
 		for(Option o : this.firstOptions.getOptions()) {
 			this.options.addOption(o);
@@ -166,5 +176,13 @@ public class CommandLineOptions {
 	
 	public boolean hasEasyTaintWrapperFile() {
 		return this.cmdLine.hasOption(ETW.getValue1());
+	}
+	
+	public boolean hasTimeout() {
+		return this.cmdLine.hasOption(TIMEOUT.getValue1());
+	}
+	
+	public int getTimeout() {
+		return Integer.parseInt(this.cmdLine.getOptionValue(TIMEOUT.getValue0()));
 	}
 }

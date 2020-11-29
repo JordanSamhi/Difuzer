@@ -6,6 +6,7 @@ import lu.uni.trux.difuzer.filters.FilterImpl;
 import lu.uni.trux.difuzer.filters.SensitiveMethodsFilter;
 import lu.uni.trux.difuzer.triggers.TriggerIfCall;
 import lu.uni.trux.difuzer.utils.CommandLineOptions;
+import lu.uni.trux.difuzer.utils.TimeOut;
 
 /*-
  * #%L
@@ -36,6 +37,15 @@ import lu.uni.trux.difuzer.utils.CommandLineOptions;
 public class Main {
 	public static void main(String[] args) throws Throwable {
 		CommandLineOptions options = new CommandLineOptions(args);
+		int timeout;
+		if(options.hasTimeout()) {
+			timeout = options.getTimeout();
+		}else {
+			timeout = 60;
+		}
+		TimeOut to = new TimeOut(timeout);
+		to.trigger();
+		
 		FlowAnalysis fa = new  FlowAnalysis(options);
 		List<TriggerIfCall> triggers = fa.run();
 		
