@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -15,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import soot.Body;
 import soot.Local;
 import soot.Scene;
-import soot.SootClass;
 import soot.SootMethodRef;
 import soot.Type;
 import soot.jimple.Jimple;
@@ -49,9 +50,8 @@ import soot.jimple.Jimple;
 public class Utils {
 
 	private static Logger logger = LoggerFactory.getLogger(Utils.class);
-
+	
 	private static int localNum = 0;
-	private static List<String> libraries = null;
 
 	public static Local addLocalToBody(Body b, Type t) {
 		Local l = Jimple.v().newLocal(getNextLocalName(), t);
@@ -93,26 +93,16 @@ public class Utils {
 		} 
 	}
 
-	public static boolean isLibrary(SootClass sc) {
-		libraries = checkFile(Constants.LIBRARIES_FILE, libraries);
-		for(String lib : libraries) {
-			if(sc.getName().startsWith(lib)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public static List<String> checkFile(String file, List<String> list) {
+	public static Set<String> loadFile(String file, Set<String> list) {
 		if(list == null) {
-			List<String> l = new ArrayList<String>();
+			Set<String> l = new HashSet<String>();
 			load(file, l);
 			return l;
 		}
 		return list;
 	}
 
-	private static void load(String file, List<String> list) {
+	private static void load(String file, Set<String> list) {
 		InputStream fis = null;
 		BufferedReader br = null;
 		String line = null;
@@ -145,7 +135,7 @@ public class Utils {
 
 	public static List<String> getParametersNamesFromSignature(String sig) {
 		String tmp = sig.split(" ")[2];
-		String params = tmp.substring(tmp.indexOf("("), tmp.indexOf(")") + 1);
+		String params = tmp.substring(tmp.indexOf("(") + 1, tmp.indexOf(")"));
 		String[] paramsArray = params.split(",");
 		List<String> parameters = new ArrayList<String>();
 		for(int i = 0 ; i < paramsArray.length ; i++) {
@@ -153,5 +143,4 @@ public class Utils {
 		}
 		return parameters;
 	}
-
 }
