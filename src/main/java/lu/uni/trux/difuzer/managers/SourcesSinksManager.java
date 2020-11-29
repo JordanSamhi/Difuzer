@@ -1,4 +1,4 @@
-package lu.uni.trux.difuzer.utils;
+package lu.uni.trux.difuzer.managers;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Set;
 
+import lu.uni.trux.difuzer.utils.Constants;
+import lu.uni.trux.difuzer.utils.Utils;
 import soot.SootMethod;
 import soot.jimple.infoflow.android.data.AndroidMethod;
 

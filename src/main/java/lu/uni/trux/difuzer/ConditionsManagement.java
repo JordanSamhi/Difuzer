@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import heros.InterproceduralCFG;
 import lu.uni.trux.difuzer.instrumentation.IfClassGenerator;
 import lu.uni.trux.difuzer.instrumentation.UnitGenerator;
+import lu.uni.trux.difuzer.managers.LibrariesManager;
 import lu.uni.trux.difuzer.utils.CommandLineOptions;
 import lu.uni.trux.difuzer.utils.Utils;
 import soot.Body;
@@ -52,6 +53,7 @@ public class ConditionsManagement implements IIPCManager{
 	CommandLineOptions options;
 
 	private Logger logger = LoggerFactory.getLogger(ConditionsManagement.class);
+	private boolean instrumentation_performed = false;
 
 	private void initializeNewClasses() {
 		IfClassGenerator.v().generateClass();
@@ -64,35 +66,46 @@ public class ConditionsManagement implements IIPCManager{
 
 	@Override
 	public void updateJimpleForICC() {
-		this.initializeNewClasses();
-		for(SootClass sc : Scene.v().getApplicationClasses()) {
-			if(!Utils.isSystemClass(sc.getName()) && sc.isConcrete()) {
-				if(!Utils.isLibrary(sc)) {
-					for(final SootMethod sm : sc.getMethods()) {
-						if(sm.isConcrete() && !sm.isPhantom()) {
-							final Body b = sm.retrieveActiveBody();
-							if(sm.isConcrete()) {
-								final PatchingChain<Unit> units = b.getUnits();
-								for(Iterator<Unit> iter = units.snapshotIterator(); iter.hasNext();) {
-									final Unit u = iter.next();
-									u.apply(new AbstractStmtSwitch() {
-										public void caseIfStmt(IfStmt stmt) {
-											Unit newUnit = UnitGenerator.v().generateIfMethodCall(stmt, sm);
-											if(newUnit != null) {
-												logger.debug(String.format("Generating if method for if statement: %s", stmt));
-												units.insertBefore(newUnit, stmt);
-												b.validate();
-												logger.debug(String.format("If method successfully generated: %s", newUnit));
-												ResultsAccumulator.v().incrementIfCount();
+		if(!this.isInstrumentation_performed()) {
+			this.initializeNewClasses();
+			for(SootClass sc : Scene.v().getApplicationClasses()) {
+				if(!Utils.isSystemClass(sc.getName()) && sc.isConcrete()) {
+					if(!LibrariesManager.v().isLibrary(sc)) {
+						for(final SootMethod sm : sc.getMethods()) {
+							if(sm.isConcrete() && !sm.isPhantom()) {
+								final Body b = sm.retrieveActiveBody();
+								if(sm.isConcrete()) {
+									final PatchingChain<Unit> units = b.getUnits();
+									for(Iterator<Unit> iter = units.snapshotIterator(); iter.hasNext();) {
+										final Unit u = iter.next();
+										u.apply(new AbstractStmtSwitch() {
+											public void caseIfStmt(IfStmt stmt) {
+												Unit newUnit = UnitGenerator.v().generateIfMethodCall(stmt, sm);
+												if(newUnit != null) {
+													logger.debug(String.format("Generating if method for if statement: %s", stmt));
+													units.insertBefore(newUnit, stmt);
+													b.validate();
+													logger.debug(String.format("If method successfully generated: %s", newUnit));
+													ResultsAccumulator.v().incrementIfCount();
+												}
 											}
-										}
-									});
+										});
+									}
 								}
 							}
 						}
 					}
 				}
 			}
+			this.setInstrumentation_performed(true);
 		}
+	}
+
+	public boolean isInstrumentation_performed() {
+		return instrumentation_performed;
+	}
+
+	public void setInstrumentation_performed(boolean instrumentation_performed) {
+		this.instrumentation_performed = instrumentation_performed;
 	}
 }

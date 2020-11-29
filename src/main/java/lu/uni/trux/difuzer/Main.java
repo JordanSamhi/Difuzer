@@ -40,6 +40,7 @@ public class Main {
 		List<Trigger> triggers = fa.run();
 		ResultsAccumulator.v().printVectorResults();
 		
+		
 		FilterImpl filters = new SensitiveMethodsFilter(null, triggers);
 		filters.apply();
 	}
