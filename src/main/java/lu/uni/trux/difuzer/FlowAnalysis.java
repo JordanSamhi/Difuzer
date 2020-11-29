@@ -9,14 +9,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.profiler.StopWatch;
 
+import lu.uni.trux.difuzer.managers.SourcesSinksManager;
 import lu.uni.trux.difuzer.triggers.Trigger;
 import lu.uni.trux.difuzer.triggers.TriggerIfCall;
 import lu.uni.trux.difuzer.utils.CommandLineOptions;
-import lu.uni.trux.difuzer.utils.SourcesSinksManager;
 import lu.uni.trux.difuzer.utils.Utils;
 import soot.Unit;
 import soot.jimple.infoflow.InfoflowConfiguration.CallgraphAlgorithm;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
+import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.SootIntegrationMode;
 import soot.jimple.infoflow.android.SetupApplication;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.results.ResultSinkInfo;
@@ -68,6 +69,9 @@ public class FlowAnalysis {
 		ifac.setCallgraphAlgorithm(CallgraphAlgorithm.CHA);
 		SetupApplication sa = new SetupApplication(ifac);
 		sa.setIpcManager(new ConditionsManagement());
+		sa.constructCallgraph(); //pre-compute sources and sinks
+		// keep instrumentation in current Soot instance
+		sa.getConfig().setSootIntegrationMode(SootIntegrationMode.UseExistingInstance);
 
 		StopWatch swAnalysis = new StopWatch("Analysis");
 		swAnalysis.start("Analysis");
@@ -112,6 +116,7 @@ public class FlowAnalysis {
 				}
 			}
 		}
+		
 		swAnalysis.stop();
 
 		ResultsAccumulator.v().setAnalysisElapsedTime(swAnalysis.elapsedTime());

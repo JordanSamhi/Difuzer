@@ -4,22 +4,17 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import lu.uni.trux.difuzer.managers.SensitiveMethodsManager;
 import lu.uni.trux.difuzer.triggers.Trigger;
-import lu.uni.trux.difuzer.utils.Constants;
-import lu.uni.trux.difuzer.utils.Utils;
 import soot.Body;
 import soot.PatchingChain;
 import soot.Scene;
 import soot.SootMethod;
 import soot.Unit;
-import soot.jimple.AbstractStmtSwitch;
-import soot.jimple.InvokeStmt;
 import soot.jimple.Stmt;
 import soot.jimple.toolkits.callgraph.Edge;
 
 public class SensitiveMethodsFilter extends FilterImpl {
-
-	private static List<String> sensitiveMethods = null;
 
 	public SensitiveMethodsFilter(FilterImpl n, List<Trigger> t) {
 		super(n, t);
@@ -36,17 +31,16 @@ public class SensitiveMethodsFilter extends FilterImpl {
 				if(stmt.containsInvokeExpr()) {
 					sm = stmt.getInvokeExpr().getMethod();
 					found = this.checkMethod(sm);
-					if(isSensitiveMethod(sm)) {
+					if(SensitiveMethodsManager.v().isSensitiveMethod(sm)) {
 						found = true;
 					}
 				}
 			}
-			System.out.println(found);
 		}
 	}
 
 	private boolean checkMethod(SootMethod targetMethod) {
-		if(isSensitiveMethod(targetMethod)) {
+		if(SensitiveMethodsManager.v().isSensitiveMethod(targetMethod)) {
 			return true;
 		}else if(targetMethod.isConcrete()) {
 			Body b = targetMethod.retrieveActiveBody();
@@ -65,14 +59,6 @@ public class SensitiveMethodsFilter extends FilterImpl {
 					}
 				}
 			}
-		}
-		return false;
-	}
-
-	public boolean isSensitiveMethod(SootMethod sm) {
-		sensitiveMethods = Utils.checkFile(Constants.SENSITIVE_METHODS, sensitiveMethods);
-		if(sensitiveMethods.contains(sm.getSignature())) {
-			return true;
 		}
 		return false;
 	}
