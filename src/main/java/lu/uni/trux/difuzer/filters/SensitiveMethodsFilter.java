@@ -31,9 +31,9 @@ public class SensitiveMethodsFilter extends FilterImpl {
 				if(stmt.containsInvokeExpr()) {
 					sm = stmt.getInvokeExpr().getMethod();
 					found = this.checkMethod(sm);
-					if(SensitiveMethodsManager.v().isSensitiveMethod(sm)) {
-						found = true;
-					}
+					System.out.println(found);
+					if(sm.toString().contains("sendText"))
+						System.out.println(sm);
 				}
 			}
 		}

@@ -93,30 +93,23 @@ public class Utils {
 		} 
 	}
 
-	public static Set<String> loadFile(String file, Set<String> list) {
-		if(list == null) {
-			Set<String> l = new HashSet<String>();
-			load(file, l);
-			return l;
-		}
-		return list;
-	}
-
-	private static void load(String file, Set<String> list) {
+	public static Set<String> loadFile(String file) {
 		InputStream fis = null;
 		BufferedReader br = null;
 		String line = null;
+		Set<String> set = new HashSet<String>();
 		try {
 			fis = Utils.class.getResourceAsStream(file);
 			br = new BufferedReader(new InputStreamReader(fis));
 			while ((line = br.readLine()) != null)   {
-				list.add(line);
+				set.add(line);
 			}
 			br.close();
 			fis.close();
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 		}
+		return set;
 	}
 
 	public static String getClassNameFromSignature(String sig) {

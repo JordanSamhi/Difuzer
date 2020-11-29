@@ -11,7 +11,7 @@ public class LibrariesManager {
 	private Set<String> libraries;
 
 	private LibrariesManager () {
-		this.libraries = Utils.loadFile(Constants.LIBRARIES_FILE, this.libraries);
+		this.libraries = Utils.loadFile(Constants.LIBRARIES_FILE);
 	}
 
 	public static LibrariesManager v() {

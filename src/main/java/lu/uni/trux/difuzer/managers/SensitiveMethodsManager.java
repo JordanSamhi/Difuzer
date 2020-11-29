@@ -1,6 +1,5 @@
 package lu.uni.trux.difuzer.managers;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import lu.uni.trux.difuzer.utils.Constants;
@@ -12,8 +11,7 @@ public class SensitiveMethodsManager {
 	private Set<String> sensitiveMethods;
 
 	private SensitiveMethodsManager () {
-		this.sensitiveMethods = new HashSet<String>();
-		Utils.loadFile(Constants.SENSITIVE_METHODS_FILE, this.sensitiveMethods);
+		this.sensitiveMethods = Utils.loadFile(Constants.SENSITIVE_METHODS_FILE);
 	}
 
 	public static SensitiveMethodsManager v() {
