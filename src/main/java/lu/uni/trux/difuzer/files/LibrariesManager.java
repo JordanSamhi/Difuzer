@@ -1,7 +1,6 @@
 package lu.uni.trux.difuzer.files;
 
 import lu.uni.trux.difuzer.utils.Constants;
-import soot.SootClass;
 
 /*-
  * #%L
@@ -44,9 +43,10 @@ public class LibrariesManager extends FileLoader {
 		return instance;
 	}
 
-	public boolean isLibrary(SootClass sc) {
+	@Override
+	public boolean contains(String s) {
 		for(String lib : this.items) {
-			if(sc.getName().startsWith(lib)) {
+			if(s.startsWith(lib)) {
 				return true;
 			}
 		}

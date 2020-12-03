@@ -1,7 +1,6 @@
 package lu.uni.trux.difuzer.files;
 
 import lu.uni.trux.difuzer.utils.Constants;
-import soot.SootMethod;
 
 public class ReflectionMethodsManager extends FileLoader {
 
@@ -16,13 +15,6 @@ public class ReflectionMethodsManager extends FileLoader {
 			instance = new ReflectionMethodsManager();
 		}
 		return instance;
-	}
-
-	public boolean isReflectionMethod(SootMethod sm) {
-		if(this.items.contains(sm.getSignature())) {
-			return true;
-		}
-		return false;
 	}
 	
 	@Override

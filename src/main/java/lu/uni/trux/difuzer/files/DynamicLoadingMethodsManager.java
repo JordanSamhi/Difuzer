@@ -1,7 +1,6 @@
 package lu.uni.trux.difuzer.files;
 
 import lu.uni.trux.difuzer.utils.Constants;
-import soot.SootMethod;
 
 public class DynamicLoadingMethodsManager extends FileLoader {
 
@@ -16,13 +15,6 @@ public class DynamicLoadingMethodsManager extends FileLoader {
 			instance = new DynamicLoadingMethodsManager();
 		}
 		return instance;
-	}
-
-	public boolean isDynamicLoadingMethod(SootMethod sm) {
-		if(this.items.contains(sm.getSignature())) {
-			return true;
-		}
-		return false;
 	}
 	
 	@Override

@@ -71,7 +71,7 @@ public class SensitiveMethodsFilter extends FilterImpl {
 	}
 
 	private boolean checkMethod(SootMethod targetMethod) {
-		if(SensitiveMethodsManager.v().isSensitiveMethod(targetMethod)) {
+		if(SensitiveMethodsManager.v().contains(targetMethod.getSignature())) {
 			return true;
 		}else if(targetMethod.isConcrete()) {
 			Body b = targetMethod.retrieveActiveBody();

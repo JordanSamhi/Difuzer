@@ -61,4 +61,7 @@ public class Constants {
 	public static final String LIBRARIES_FILE = "/libraries.txt";
 	public static final String SENSITIVE_METHODS_FILE = "/sensitiveMethods.txt";
 	public static final String SOURCES_FILE = "/Sources.txt";
+	public static final String REFLECTION_FILE = "/reflection_methods.txt";
+	public static final String DYNAMIC_LOADING_FILE = "/dynamic_loading_methods.txt";
+	public static final String BACKGROUND_METHODS_FILE = "/background_methods.txt";
 }

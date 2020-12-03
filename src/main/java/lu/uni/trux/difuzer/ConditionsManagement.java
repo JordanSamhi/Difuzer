@@ -70,7 +70,7 @@ public class ConditionsManagement implements IIPCManager{
 			this.initializeNewClasses();
 			for(SootClass sc : Scene.v().getApplicationClasses()) {
 				if(!Utils.isSystemClass(sc.getName()) && sc.isConcrete()) {
-					if(!LibrariesManager.v().isLibrary(sc)) {
+					if(!LibrariesManager.v().contains(sc.getName())) {
 						for(final SootMethod sm : sc.getMethods()) {
 							if(sm.isConcrete() && !sm.isPhantom()) {
 								final Body b = sm.retrieveActiveBody();

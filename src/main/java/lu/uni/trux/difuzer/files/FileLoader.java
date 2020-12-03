@@ -44,6 +44,13 @@ public abstract class FileLoader {
 	
 	protected abstract String getFile();
 	
+	public boolean contains(String s) {
+		if(this.items.contains(s)) {
+			return true;
+		}
+		return false;
+	}
+	
 	private Set<String> loadFile(String file) {
 		InputStream fis = null;
 		BufferedReader br = null;

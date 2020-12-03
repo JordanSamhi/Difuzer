@@ -1,7 +1,6 @@
 package lu.uni.trux.difuzer.files;
 
 import lu.uni.trux.difuzer.utils.Constants;
-import soot.SootMethod;
 
 /*-
  * #%L
@@ -41,13 +40,6 @@ public class SensitiveMethodsManager extends FileLoader {
 			instance = new SensitiveMethodsManager();
 		}
 		return instance;
-	}
-
-	public boolean isSensitiveMethod(SootMethod sm) {
-		if(this.items.contains(sm.getSignature())) {
-			return true;
-		}
-		return false;
 	}
 
 	@Override
