@@ -6,9 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import heros.InterproceduralCFG;
+import lu.uni.trux.difuzer.files.LibrariesManager;
 import lu.uni.trux.difuzer.instrumentation.IfClassGenerator;
 import lu.uni.trux.difuzer.instrumentation.UnitGenerator;
-import lu.uni.trux.difuzer.managers.LibrariesManager;
 import lu.uni.trux.difuzer.utils.CommandLineOptions;
 import lu.uni.trux.difuzer.utils.Utils;
 import soot.Body;

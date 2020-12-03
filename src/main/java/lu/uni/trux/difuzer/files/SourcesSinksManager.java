@@ -1,4 +1,4 @@
-package lu.uni.trux.difuzer.managers;
+package lu.uni.trux.difuzer.files;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -34,16 +34,17 @@ import soot.jimple.infoflow.android.data.AndroidMethod;
  * #L%
  */
 
-public class SourcesSinksManager {
+public class SourcesSinksManager extends FileLoader {
 
 	private static SourcesSinksManager instance;
 	private Set<AndroidMethod> sources;
 	private Set<AndroidMethod> sinks;
 
 	private SourcesSinksManager () {
+		super();
 		this.sources = new HashSet<AndroidMethod>();
 		this.sinks = new HashSet<AndroidMethod>();
-		this.loadSources(Utils.loadFile(Constants.SOURCES_FILE));
+		this.loadSources();
 	}
 
 	public static SourcesSinksManager v() {
@@ -53,8 +54,8 @@ public class SourcesSinksManager {
 		return instance;
 	}
 
-	private void loadSources(Set<String> sources) {
-		for(String source: sources){
+	private void loadSources() {
+		for(String source: this.items){
 			this.sources.add(new AndroidMethod(Utils.getMethodNameFromSignature(source),
 					Utils.getParametersNamesFromSignature(source),
 					Utils.getReturnNameFromSignature(source),
@@ -72,5 +73,10 @@ public class SourcesSinksManager {
 
 	public void addSink(SootMethod sm) {
 		this.sinks.add(new AndroidMethod(sm));
+	}
+
+	@Override
+	protected String getFile() {
+		return Constants.SOURCES_FILE;
 	}
 }

@@ -1,14 +1,8 @@
 package lu.uni.trux.difuzer.utils;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -90,25 +84,6 @@ public class Utils {
 		} else { 
 			logger.info(String.format("Failed to delete %s", filename));
 		} 
-	}
-
-	public static Set<String> loadFile(String file) {
-		InputStream fis = null;
-		BufferedReader br = null;
-		String line = null;
-		Set<String> set = new HashSet<String>();
-		try {
-			fis = Utils.class.getResourceAsStream(file);
-			br = new BufferedReader(new InputStreamReader(fis));
-			while ((line = br.readLine()) != null)   {
-				set.add(line);
-			}
-			br.close();
-			fis.close();
-		} catch (IOException e) {
-			logger.error(e.getMessage());
-		}
-		return set;
 	}
 
 	public static String getClassNameFromSignature(String sig) {

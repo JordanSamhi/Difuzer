@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import lu.uni.trux.difuzer.managers.SensitiveMethodsManager;
+import lu.uni.trux.difuzer.files.SensitiveMethodsManager;
 import lu.uni.trux.difuzer.triggers.Trigger;
 import lu.uni.trux.difuzer.triggers.TriggerIfCall;
 import soot.Body;

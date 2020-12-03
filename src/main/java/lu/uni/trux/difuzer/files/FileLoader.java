@@ -1,10 +1,13 @@
-package lu.uni.trux.difuzer.managers;
+package lu.uni.trux.difuzer.files;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.HashSet;
 import java.util.Set;
 
-import lu.uni.trux.difuzer.utils.Constants;
 import lu.uni.trux.difuzer.utils.Utils;
-import soot.SootClass;
 
 /*-
  * #%L
@@ -32,27 +35,31 @@ import soot.SootClass;
  * #L%
  */
 
-public class LibrariesManager {
-	private static LibrariesManager instance;
-	private Set<String> libraries;
+public abstract class FileLoader {
+	protected Set<String> items;
 
-	private LibrariesManager () {
-		this.libraries = Utils.loadFile(Constants.LIBRARIES_FILE);
+	protected FileLoader () {
+		this.items = this.loadFile(this.getFile());
 	}
-
-	public static LibrariesManager v() {
-		if(instance == null) {
-			instance = new LibrariesManager();
-		}
-		return instance;
-	}
-
-	public boolean isLibrary(SootClass sc) {
-		for(String lib : this.libraries) {
-			if(sc.getName().startsWith(lib)) {
-				return true;
+	
+	protected abstract String getFile();
+	
+	private Set<String> loadFile(String file) {
+		InputStream fis = null;
+		BufferedReader br = null;
+		String line = null;
+		Set<String> set = new HashSet<String>();
+		try {
+			fis = Utils.class.getResourceAsStream(file);
+			br = new BufferedReader(new InputStreamReader(fis));
+			while ((line = br.readLine()) != null)   {
+				set.add(line);
 			}
+			br.close();
+			fis.close();
+		} catch (IOException e) {
+			System.err.println(e.getMessage());
 		}
-		return false;
+		return set;
 	}
 }

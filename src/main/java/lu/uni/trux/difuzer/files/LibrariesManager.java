@@ -1,10 +1,7 @@
-package lu.uni.trux.difuzer.managers;
-
-import java.util.Set;
+package lu.uni.trux.difuzer.files;
 
 import lu.uni.trux.difuzer.utils.Constants;
-import lu.uni.trux.difuzer.utils.Utils;
-import soot.SootMethod;
+import soot.SootClass;
 
 /*-
  * #%L
@@ -32,25 +29,32 @@ import soot.SootMethod;
  * #L%
  */
 
-public class SensitiveMethodsManager {
-	private static SensitiveMethodsManager instance;
-	private Set<String> sensitiveMethods;
-
-	private SensitiveMethodsManager () {
-		this.sensitiveMethods = Utils.loadFile(Constants.SENSITIVE_METHODS_FILE);
+public class LibrariesManager extends FileLoader {
+	
+	private static LibrariesManager instance;
+	
+	private LibrariesManager () {
+		super();
 	}
 
-	public static SensitiveMethodsManager v() {
+	public static LibrariesManager v() {
 		if(instance == null) {
-			instance = new SensitiveMethodsManager();
+			instance = new LibrariesManager();
 		}
 		return instance;
 	}
 
-	public boolean isSensitiveMethod(SootMethod sm) {
-		if(this.sensitiveMethods.contains(sm.getSignature())) {
-			return true;
+	public boolean isLibrary(SootClass sc) {
+		for(String lib : this.items) {
+			if(sc.getName().startsWith(lib)) {
+				return true;
+			}
 		}
 		return false;
+	}
+
+	@Override
+	protected String getFile() {
+		return Constants.LIBRARIES_FILE;
 	}
 }

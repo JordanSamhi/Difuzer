@@ -3,7 +3,7 @@ package lu.uni.trux.difuzer.instrumentation;
 import java.util.ArrayList;
 import java.util.List;
 
-import lu.uni.trux.difuzer.managers.SourcesSinksManager;
+import lu.uni.trux.difuzer.files.SourcesSinksManager;
 import lu.uni.trux.difuzer.utils.Constants;
 import lu.uni.trux.difuzer.utils.Utils;
 import soot.SootMethod;
