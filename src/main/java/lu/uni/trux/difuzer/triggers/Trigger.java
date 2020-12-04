@@ -52,6 +52,7 @@ public class Trigger {
 	}
 	
 	public Trigger(IfStmt i, InfoflowCFG icfg) {
+		this();
 		this.setIcfg(icfg);
 		this.setCondition(i);
 		this.generateGraph();
