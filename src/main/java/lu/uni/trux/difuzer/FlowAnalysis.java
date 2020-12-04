@@ -7,12 +7,10 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.profiler.StopWatch;
 
 import lu.uni.trux.difuzer.files.SourcesSinksManager;
 import lu.uni.trux.difuzer.triggers.TriggerIfCall;
 import lu.uni.trux.difuzer.utils.CommandLineOptions;
-import lu.uni.trux.difuzer.utils.Utils;
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.infoflow.InfoflowConfiguration.CallgraphAlgorithm;
@@ -74,9 +72,6 @@ public class FlowAnalysis {
 		// keep instrumentation in current Soot instance
 		sa.getConfig().setSootIntegrationMode(SootIntegrationMode.UseExistingInstance);
 
-		StopWatch swAnalysis = new StopWatch("Analysis");
-		swAnalysis.start("Analysis");
-
 		if(options.hasEasyTaintWrapperFile()) {
 			final ITaintPropagationWrapper taintWrapper;
 			EasyTaintWrapper easyTaintWrapper = null;
@@ -123,10 +118,6 @@ public class FlowAnalysis {
 			}
 		}
 		
-		swAnalysis.stop();
-
-		ResultsAccumulator.v().setAnalysisElapsedTime((int) (swAnalysis.elapsedTime() / 1000000000));
-		ResultsAccumulator.v().setAppName(Utils.getBasenameWithoutExtension(this.options.getApk()));
 		return triggers;
 	}
 }
