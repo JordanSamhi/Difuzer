@@ -7,8 +7,6 @@ import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Set;
 
-import lu.uni.trux.difuzer.utils.Utils;
-
 /*-
  * #%L
  * Difuzer
@@ -57,7 +55,7 @@ public abstract class FileLoader {
 		String line = null;
 		Set<String> set = new HashSet<String>();
 		try {
-			fis = Utils.class.getResourceAsStream(file);
+			fis = this.getClass().getResourceAsStream(file);
 			br = new BufferedReader(new InputStreamReader(fis));
 			while ((line = br.readLine()) != null)   {
 				set.add(line);
