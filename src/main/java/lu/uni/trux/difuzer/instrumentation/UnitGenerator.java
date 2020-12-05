@@ -68,7 +68,6 @@ public class UnitGenerator {
 				op2 = condition.getOp2();
 		String symbol = condition.getSymbol();
 		
-		//TODO uncomment this
 		if((op1.toString().equals(Constants.NULL) || op2.toString().equals(Constants.NULL)) && (symbol.equals(Constants.EQUALS) || symbol.equals(Constants.DIFFERENT))) {
 			return null;
 		}

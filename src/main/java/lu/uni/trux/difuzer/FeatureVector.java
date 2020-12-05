@@ -221,6 +221,14 @@ public class FeatureVector {
 		this.isNative = isNative;
 	}
 
+	public int getSize() {
+		return this.vector.size();
+	}
+
+	public String[] toStringArray() {
+		return this.toString().split(",");
+	}
+
 	@Override
 	public String toString() {
 		List<String> l = new ArrayList<String>();

@@ -2,11 +2,13 @@ package lu.uni.trux.difuzer;
 
 import java.util.List;
 
-import lu.uni.trux.difuzer.filters.FilterImpl;
-import lu.uni.trux.difuzer.filters.SensitiveMethodsFilter;
+import org.slf4j.profiler.StopWatch;
+
+import lu.uni.trux.difuzer.ocsvm.PredictOCSVM;
 import lu.uni.trux.difuzer.triggers.TriggerIfCall;
 import lu.uni.trux.difuzer.utils.CommandLineOptions;
 import lu.uni.trux.difuzer.utils.TimeOut;
+import lu.uni.trux.difuzer.utils.Utils;
 
 /*-
  * #%L
@@ -36,6 +38,9 @@ import lu.uni.trux.difuzer.utils.TimeOut;
 
 public class Main {
 	public static void main(String[] args) throws Throwable {
+		StopWatch swAnalysis = new StopWatch("Difuzer");
+		swAnalysis.start("Difuzer");
+
 		CommandLineOptions options = new CommandLineOptions(args);
 		int timeout;
 		if(options.hasTimeout()) {
@@ -45,15 +50,25 @@ public class Main {
 		}
 		TimeOut to = new TimeOut(timeout);
 		to.trigger();
-		
+
 		FlowAnalysis fa = new  FlowAnalysis(options);
 		List<TriggerIfCall> triggers = fa.run();
-		
-		FilterImpl filters = new SensitiveMethodsFilter(null, triggers);
-		filters.apply();
-		
+
 		ResultsAccumulator.v().setTriggersFound(triggers);
+
+		PredictOCSVM.v().loadDefaultModel();
+		double prediction;
+		for(TriggerIfCall t: triggers) {
+			FeatureVector fv = new FeatureVector(t);
+			prediction = PredictOCSVM.v().predict(fv);
+			System.out.println(prediction);
+		}
+
+		swAnalysis.stop();
+		ResultsAccumulator.v().setAnalysisElapsedTime((int) (swAnalysis.elapsedTime() / 1000000000));
+		ResultsAccumulator.v().setAppName(Utils.getBasenameWithoutExtension(options.getApk()));
 		ResultsAccumulator.v().printVectorResults();
 		ResultsAccumulator.v().printTriggersResults();
+		to.cancel();
 	}
 }
