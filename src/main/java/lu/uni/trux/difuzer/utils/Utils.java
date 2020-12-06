@@ -13,6 +13,10 @@ import soot.Local;
 import soot.Scene;
 import soot.SootMethodRef;
 import soot.Type;
+import soot.Unit;
+import soot.Value;
+import soot.jimple.CaughtExceptionRef;
+import soot.jimple.IdentityStmt;
 import soot.jimple.Jimple;
 
 /*-
@@ -109,5 +113,16 @@ public class Utils {
 			parameters.add(paramsArray[i]);
 		}
 		return parameters;
+	}
+	
+	public static boolean isCaugthException(Unit u) {
+		if(u instanceof IdentityStmt) {
+			IdentityStmt is = (IdentityStmt) u;
+			Value rightOp = is.getRightOp();
+			if(rightOp instanceof CaughtExceptionRef) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
