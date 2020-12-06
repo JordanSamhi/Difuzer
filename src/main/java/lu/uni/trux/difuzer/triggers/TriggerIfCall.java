@@ -47,14 +47,11 @@ public class TriggerIfCall extends Trigger {
 	
 	public TriggerIfCall(Unit u, InfoflowCFG icfg, List<SootMethod> sources) {
 		super();
-		this.setIcfg(icfg);
 		IfStmt i = this.generateCondition(u, icfg);
 		this.setIfMethodCall(u);
+		this.initializeTrigger(i, icfg);
 		this.variablesUsedInCondition = new ArrayList<Value>();
 		this.generateListOfVariablesUsed(u);
-		this.setCondition(i);
-		this.generateGraph();
-		this.generateGuardedStmts();
 		this.setSources(sources);
 	}
 
@@ -76,7 +73,7 @@ public class TriggerIfCall extends Trigger {
 		if(u instanceof InvokeStmt) {
 			InvokeStmt inv = (InvokeStmt) u;
 			if(inv.getInvokeExpr().getMethod().getName().equals(Constants.IF_METHOD)) {
-				for(Unit unit : this.icfg.getSuccsOf(u)) {
+				for(Unit unit : icfg.getSuccsOf(u)) {
 					if(unit instanceof IfStmt) {
 						return (IfStmt)unit;
 					}
