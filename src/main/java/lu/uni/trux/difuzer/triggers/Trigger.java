@@ -1,8 +1,11 @@
 package lu.uni.trux.difuzer.triggers;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import lu.uni.trux.difuzer.utils.Utils;
 import soot.Body;
 import soot.SootMethod;
 import soot.Unit;
@@ -46,19 +49,64 @@ public class Trigger {
 	protected BriefUnitGraph graph;
 	protected IfStmt condition;
 	protected List<Stmt> guardedStmts;
-	
+	protected Set<Unit> branchOne;
+	protected Set<Unit> branchTwo;
+
 	protected Trigger() {
 		this.setGuardedStmts(new ArrayList<Stmt>());
+		this.setBranchOne(new HashSet<Unit>());
+		this.setBranchTwo(new HashSet<Unit>());
 	}
-	
+
 	public Trigger(IfStmt i, InfoflowCFG icfg) {
 		this();
+		this.initializeTrigger(i, icfg);
+	}
+
+
+	protected void initializeTrigger(IfStmt i, InfoflowCFG icfg) {
 		this.setIcfg(icfg);
 		this.setCondition(i);
 		this.generateGraph();
 		this.generateGuardedStmts();
+		this.generateBranches();
 	}
-	
+
+	private void generateBranches() {
+		List<Unit> successors = new ArrayList<Unit>();
+		Unit succ = null;
+		for(Unit u: this.graph.getSuccsOf(condition)) {
+			if(!Utils.isCaugthException(u)) {
+				successors.add(u);
+			}
+		}
+		for(int i = 0 ; i < successors.size() ; i++) {
+			succ = successors.get(i);
+			// Branch One
+			Set<Unit> intersection = null;
+			if(i == 0) {
+				this.getBranch(succ, this.branchOne);
+			}
+			// Branch Two
+			else if(i == 1) {
+				this.getBranch(succ, this.branchTwo);
+			}
+			intersection = new HashSet<Unit>(this.branchOne);
+			intersection.retainAll(this.branchTwo);
+			this.branchOne.removeAll(intersection);
+			this.branchTwo.removeAll(intersection);
+		}
+	}
+
+	private void getBranch(Unit u, Set<Unit> list) {
+		if(!list.contains(u) && this.guardedStmts.contains(u)) {
+			list.add(u);
+			for(Unit succ: this.graph.getSuccsOf(u)) {
+				this.getBranch(succ, list);
+			}
+		}
+	}
+
 	protected void generateGuardedStmts() {
 		SimpleDominatorsFinder<Unit> pdf = new SimpleDominatorsFinder<Unit>(this.graph);
 		if(body != null) {
@@ -117,5 +165,29 @@ public class Trigger {
 
 	public void setMethod(SootMethod method) {
 		this.method = method;
+	}
+
+	public Body getBody() {
+		return body;
+	}
+
+	public void setBody(Body body) {
+		this.body = body;
+	}
+
+	public Set<Unit> getBranchOne() {
+		return branchOne;
+	}
+
+	public void setBranchOne(Set<Unit> branchOne) {
+		this.branchOne = branchOne;
+	}
+
+	public Set<Unit> getBranchTwo() {
+		return branchTwo;
+	}
+
+	public void setBranchTwo(Set<Unit> branchTwo) {
+		this.branchTwo = branchTwo;
 	}
 }
