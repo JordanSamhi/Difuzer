@@ -48,13 +48,13 @@ public class Trigger {
 	protected InfoflowCFG icfg;
 	protected BriefUnitGraph graph;
 	protected IfStmt condition;
-	protected List<Stmt> guardedStmts;
+	protected List<Stmt> stmtsDominatedByCondition;
 	protected Set<Unit> branchOne;
 	protected Set<Unit> branchTwo;
 	protected Set<Unit> bothBranches;
 
 	protected Trigger() {
-		this.setGuardedStmts(new ArrayList<Stmt>());
+		this.setStmtsDominatedByCondition(new ArrayList<Stmt>());
 		this.setBranchOne(new HashSet<Unit>());
 		this.setBranchTwo(new HashSet<Unit>());
 		this.setBothBranches(new HashSet<Unit>());
@@ -103,7 +103,7 @@ public class Trigger {
 	}
 
 	private void getBranch(Unit u, Set<Unit> list) {
-		if(!list.contains(u) && this.guardedStmts.contains(u)) {
+		if(!list.contains(u) && this.stmtsDominatedByCondition.contains(u)) {
 			list.add(u);
 			for(Unit succ: this.graph.getSuccsOf(u)) {
 				this.getBranch(succ, list);
@@ -116,7 +116,7 @@ public class Trigger {
 		if(body != null) {
 			for(Unit u : body.getUnits()) {
 				if(pdf.isDominatedBy(u, condition) && !u.equals(condition)) {
-					this.guardedStmts.add((Stmt)u);
+					this.stmtsDominatedByCondition.add((Stmt)u);
 				}
 			}
 		}
@@ -155,12 +155,12 @@ public class Trigger {
 		this.condition = condition;
 	}
 
-	public List<Stmt> getGuardedStmts() {
-		return guardedStmts;
+	public List<Stmt> getStmtsDominatedByCondition() {
+		return stmtsDominatedByCondition;
 	}
 
-	public void setGuardedStmts(List<Stmt> guardedStmts) {
-		this.guardedStmts = guardedStmts;
+	public void setStmtsDominatedByCondition(List<Stmt> stmtsDominatedByCondition) {
+		this.stmtsDominatedByCondition = stmtsDominatedByCondition;
 	}
 
 	public SootMethod getMethod() {
