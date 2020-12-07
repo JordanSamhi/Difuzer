@@ -64,9 +64,9 @@ public class FeatureVector {
 	 */
 
 	private TriggerIfCall trigger;
-	private Vector<Boolean> vector;
+	private Vector<Integer> vector;
 	private boolean isNative;
-	private boolean containsSensitiveMethod;
+	private int numberOfSensitiveMethods;
 	private boolean containsDynamicLoading;
 	private boolean parameterUsedInGuardedCode;
 	private boolean containsBackgroundTasks;
@@ -75,10 +75,10 @@ public class FeatureVector {
 
 	public FeatureVector(TriggerIfCall t) {
 		this.trigger = t;
-		this.vector = new Vector<Boolean>();
+		this.vector = new Vector<Integer>();
 		this.setContainsBackgroundTasks(false);
 		this.setContainsDynamicLoading(false);
-		this.setContainsSensitiveMethod(false);
+		this.setNumberOfSensitiveMethods(0);
 		this.setNative(false);
 		this.setParameterUsedInGuardedCode(false);
 		this.setContainsReflection(false);
@@ -87,17 +87,19 @@ public class FeatureVector {
 	}
 
 	private void updateVector() {
-		this.vector.add(this.containsSensitiveMethod);
-		this.vector.add(this.isNative);
-		this.vector.add(this.containsDynamicLoading);
-		this.vector.add(this.containsReflection);
-		this.vector.add(this.containsBackgroundTasks);
-		this.vector.add(this.parameterUsedInGuardedCode);
+		this.vector.add(this.numberOfSensitiveMethods);
+		this.vector.add(this.isNative ? 1 : 0);
+		this.vector.add(this.containsDynamicLoading ? 1 : 0);
+		this.vector.add(this.containsReflection ? 1 : 0);
+		this.vector.add(this.containsBackgroundTasks ? 1 : 0);
+		this.vector.add(this.parameterUsedInGuardedCode ? 1 : 0);
 	}
 
 	private void updateValues() {
 		SootMethod sm = null;
-		for(Stmt stmt : trigger.getGuardedStmts()) {
+		Stmt stmt = null;
+		for(Unit u : this.trigger.getBothBranches()) {
+			stmt = (Stmt)u; 
 			if(stmt.containsInvokeExpr()) {
 				sm = stmt.getInvokeExpr().getMethod();
 				this.inspectMethod(sm, new ArrayList<SootMethod>());
@@ -107,8 +109,10 @@ public class FeatureVector {
 	}
 
 	private void checkParameterUSedInGuardedCode() {
+		Stmt stmt = null;
 		for(Value parameter: this.trigger.getVariablesUsedInCondition()) {
-			for(Stmt stmt : trigger.getGuardedStmts()) {
+			for(Unit u : this.trigger.getBothBranches()) {
+				stmt = (Stmt)u;
 				if(stmt.containsInvokeExpr()) {
 					if(stmt.getInvokeExpr().getMethod().getName().equals(Constants.IF_METHOD)) {
 						continue;
@@ -144,10 +148,10 @@ public class FeatureVector {
 			visitedMethods.add(sm);
 			String methodSignature = sm.getSignature();
 			SootClass sc = sm.getDeclaringClass();
-			if(!this.containsSensitiveMethod && SensitiveMethodsManager.v().contains(methodSignature)) {
-				this.setContainsSensitiveMethod(true);
+			if(SensitiveMethodsManager.v().contains(methodSignature)) {
+				this.setNumberOfSensitiveMethods(this.getNumberOfSensitiveMethods() + 1);
 			}
-			if(sc.isApplicationClass() && !Utils.isSystemClass(sc.getName()) && !this.isNative && sm.isNative()) {
+			if(!this.isNative && sc.isApplicationClass() && !Utils.isSystemClass(sc.getName()) && sm.isNative()) {
 				this.setNative(true);
 			}
 			if(!this.containsDynamicLoading && DynamicLoadingMethodsManager.v().contains(methodSignature)) {
@@ -197,12 +201,12 @@ public class FeatureVector {
 		this.containsDynamicLoading = containsDynamicLoading;
 	}
 
-	public boolean isContainsSensitiveMethod() {
-		return containsSensitiveMethod;
+	public int getNumberOfSensitiveMethods() {
+		return numberOfSensitiveMethods;
 	}
 
-	public void setContainsSensitiveMethod(boolean containsSensitiveMethod) {
-		this.containsSensitiveMethod = containsSensitiveMethod;
+	public void setNumberOfSensitiveMethods(int numberOfSensitiveMethods) {
+		this.numberOfSensitiveMethods = numberOfSensitiveMethods;
 	}
 
 	public boolean isContainsBackgroundTasks() {
@@ -232,8 +236,8 @@ public class FeatureVector {
 	@Override
 	public String toString() {
 		List<String> l = new ArrayList<String>();
-		for(Boolean b : this.vector) {
-			l.add(b ? "1" : "0");
+		for(Integer i : this.vector) {
+			l.add(String.format("%s", i));
 		}
 		return String.join(",", l);
 	}
