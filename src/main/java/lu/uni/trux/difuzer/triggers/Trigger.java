@@ -51,11 +51,13 @@ public class Trigger {
 	protected List<Stmt> guardedStmts;
 	protected Set<Unit> branchOne;
 	protected Set<Unit> branchTwo;
+	protected Set<Unit> bothBranches;
 
 	protected Trigger() {
 		this.setGuardedStmts(new ArrayList<Stmt>());
 		this.setBranchOne(new HashSet<Unit>());
 		this.setBranchTwo(new HashSet<Unit>());
+		this.setBothBranches(new HashSet<Unit>());
 	}
 
 	public Trigger(IfStmt i, InfoflowCFG icfg) {
@@ -96,6 +98,8 @@ public class Trigger {
 			this.branchOne.removeAll(intersection);
 			this.branchTwo.removeAll(intersection);
 		}
+		this.bothBranches.addAll(this.branchOne);
+		this.bothBranches.addAll(this.branchTwo);
 	}
 
 	private void getBranch(Unit u, Set<Unit> list) {
@@ -189,5 +193,13 @@ public class Trigger {
 
 	public void setBranchTwo(Set<Unit> branchTwo) {
 		this.branchTwo = branchTwo;
+	}
+
+	public Set<Unit> getBothBranches() {
+		return bothBranches;
+	}
+
+	public void setBothBranches(Set<Unit> bothBranches) {
+		this.bothBranches = bothBranches;
 	}
 }
