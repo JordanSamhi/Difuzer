@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import com.google.common.collect.Iterators;
+
 import lu.uni.trux.difuzer.files.BackgroundMethodsManager;
 import lu.uni.trux.difuzer.files.DynamicLoadingMethodsManager;
 import lu.uni.trux.difuzer.files.ReflectionMethodsManager;
@@ -21,6 +23,7 @@ import soot.Unit;
 import soot.Value;
 import soot.ValueBox;
 import soot.jimple.Stmt;
+import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
 
 /*-
@@ -67,21 +70,26 @@ public class FeatureVector {
 	private Vector<Integer> vector;
 	private boolean isNative;
 	private int numberOfSensitiveMethods;
+	private int numberOfApplicationMethodCalledOnlyInTrigger;
+	private int numberOfSensitiveMethodCalledOnlyInTrigger;
 	private boolean containsDynamicLoading;
 	private boolean parameterUsedInGuardedCode;
 	private boolean containsBackgroundTasks;
 	private boolean containsReflection;
-	
+	private CallGraph callGraph;
 
-	public FeatureVector(TriggerIfCall t) {
+
+	public FeatureVector(TriggerIfCall t, CallGraph cg) {
 		this.trigger = t;
 		this.vector = new Vector<Integer>();
+		this.callGraph = cg;
 		this.setContainsBackgroundTasks(false);
 		this.setContainsDynamicLoading(false);
 		this.setNumberOfSensitiveMethods(0);
 		this.setNative(false);
 		this.setParameterUsedInGuardedCode(false);
 		this.setContainsReflection(false);
+		this.setNumberOfApplicationMethodCalledOnlyInTrigger(0);
 		this.updateValues();
 		this.updateVector();
 	}
@@ -93,6 +101,8 @@ public class FeatureVector {
 		this.vector.add(this.containsReflection ? 1 : 0);
 		this.vector.add(this.containsBackgroundTasks ? 1 : 0);
 		this.vector.add(this.parameterUsedInGuardedCode ? 1 : 0);
+		this.vector.add(this.numberOfApplicationMethodCalledOnlyInTrigger);
+		this.vector.add(this.numberOfSensitiveMethodCalledOnlyInTrigger);
 	}
 
 	private void updateValues() {
@@ -144,10 +154,33 @@ public class FeatureVector {
 	}
 
 	private void inspectMethod(SootMethod sm, ArrayList<SootMethod> visitedMethods) {
+		if(sm.getName().equals(Constants.IF_METHOD)) {
+			return;
+		}
 		if(!visitedMethods.contains(sm)) {
 			visitedMethods.add(sm);
 			String methodSignature = sm.getSignature();
 			SootClass sc = sm.getDeclaringClass();
+			Stmt stmt = null;
+			if(Iterators.size(this.callGraph.edgesInto(sm)) == 1) {
+				int countMethodCallFoundInBody = 0;
+				for(Unit u : this.trigger.getBody().getUnits()) {
+					stmt = (Stmt)u;
+					if(stmt.containsInvokeExpr()) {
+						if(stmt.getInvokeExpr().getMethod().equals(sm)) {
+							countMethodCallFoundInBody++;
+						}
+					}
+				}
+				if(countMethodCallFoundInBody == 1) {
+					if(sc.isApplicationClass()) {
+						this.setNumberOfApplicationMethodCalledOnlyInTrigger(this.getNumberOfApplicationMethodCalledOnlyInTrigger() + 1);
+					}
+					if(SensitiveMethodsManager.v().contains(methodSignature)) {
+						this.setNumberOfSensitiveMethodCalledOnlyInTrigger(this.getNumberOfSensitiveMethodCalledOnlyInTrigger() + 1);
+					}
+				}
+			}
 			if(SensitiveMethodsManager.v().contains(methodSignature)) {
 				this.setNumberOfSensitiveMethods(this.getNumberOfSensitiveMethods() + 1);
 			}
@@ -168,7 +201,7 @@ public class FeatureVector {
 				Body b = sm.retrieveActiveBody();
 				final PatchingChain<Unit> units = b.getUnits();
 				for(Iterator<Unit> iter = units.snapshotIterator(); iter.hasNext();) {
-					Stmt stmt = (Stmt) iter.next();
+					stmt = (Stmt) iter.next();
 					if(stmt.containsInvokeExpr()) {
 						Iterator<Edge> it = Scene.v().getCallGraph().edgesOutOf(stmt);
 						while(it.hasNext()) {
@@ -248,5 +281,21 @@ public class FeatureVector {
 
 	public void setContainsReflection(boolean containsReflection) {
 		this.containsReflection = containsReflection;
+	}
+
+	public int getNumberOfApplicationMethodCalledOnlyInTrigger() {
+		return numberOfApplicationMethodCalledOnlyInTrigger;
+	}
+
+	public void setNumberOfApplicationMethodCalledOnlyInTrigger(int numberOfApplicationMethodCalledOnlyInTrigger) {
+		this.numberOfApplicationMethodCalledOnlyInTrigger = numberOfApplicationMethodCalledOnlyInTrigger;
+	}
+
+	public int getNumberOfSensitiveMethodCalledOnlyInTrigger() {
+		return numberOfSensitiveMethodCalledOnlyInTrigger;
+	}
+
+	public void setNumberOfSensitiveMethodCalledOnlyInTrigger(int numberOfSensitiveMethodCalledOnlyInTrigger) {
+		this.numberOfSensitiveMethodCalledOnlyInTrigger = numberOfSensitiveMethodCalledOnlyInTrigger;
 	}
 }

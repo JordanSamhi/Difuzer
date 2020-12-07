@@ -54,7 +54,7 @@ public class SensitiveMethodsFilter extends FilterImpl {
 		SootMethod sm = null;
 		for(Trigger t : this.triggers) {
 			found = false;
-			for(Stmt stmt : t.getGuardedStmts()) {
+			for(Stmt stmt : t.getStmtsDominatedByCondition()) {
 				if(stmt.containsInvokeExpr()) {
 					sm = stmt.getInvokeExpr().getMethod();
 					found = this.checkMethod(sm);
