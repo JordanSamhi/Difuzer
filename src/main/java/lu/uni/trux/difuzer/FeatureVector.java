@@ -1,8 +1,10 @@
 package lu.uni.trux.difuzer;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import com.google.common.collect.Iterators;
@@ -55,7 +57,7 @@ import soot.jimple.toolkits.callgraph.Edge;
 public class FeatureVector {
 
 	/**
-	 * Feature vectore representing a Trigger
+	 * Feature vector representing a Trigger
 	 * Order of features:
 	 * 
 	 * 1 - Does it guard a sensitive method?
@@ -72,10 +74,13 @@ public class FeatureVector {
 	private int numberOfSensitiveMethods;
 	private int numberOfApplicationMethodCalledOnlyInTrigger;
 	private int numberOfSensitiveMethodCalledOnlyInTrigger;
+	private int differenceBetweenBranches;
 	private boolean containsDynamicLoading;
 	private boolean parameterUsedInGuardedCode;
 	private boolean containsBackgroundTasks;
 	private boolean containsReflection;
+	private Set<SootMethod> sensitiveMethodsInBranchOne;
+	private Set<SootMethod> sensitiveMethodsInBranchTwo;
 	private CallGraph callGraph;
 
 
@@ -90,6 +95,8 @@ public class FeatureVector {
 		this.setParameterUsedInGuardedCode(false);
 		this.setContainsReflection(false);
 		this.setNumberOfApplicationMethodCalledOnlyInTrigger(0);
+		this.setSensitiveMethodsInBranchOne(new HashSet<SootMethod>());
+		this.setSensitiveMethodsInBranchTwo(new HashSet<SootMethod>());
 		this.updateValues();
 		this.updateVector();
 	}
@@ -103,6 +110,7 @@ public class FeatureVector {
 		this.vector.add(this.parameterUsedInGuardedCode ? 1 : 0);
 		this.vector.add(this.numberOfApplicationMethodCalledOnlyInTrigger);
 		this.vector.add(this.numberOfSensitiveMethodCalledOnlyInTrigger);
+		this.vector.add(this.differenceBetweenBranches);
 	}
 
 	private void updateValues() {
@@ -112,10 +120,21 @@ public class FeatureVector {
 			stmt = (Stmt)u; 
 			if(stmt.containsInvokeExpr()) {
 				sm = stmt.getInvokeExpr().getMethod();
-				this.inspectMethod(sm, new ArrayList<SootMethod>());
+				this.inspectMethod(sm, new ArrayList<SootMethod>(), u);
 			}
 		}
 		this.checkParameterUSedInGuardedCode();
+		this.computeBranchesDifference();
+	}
+
+	private void computeBranchesDifference() {
+		if(!(this.sensitiveMethodsInBranchOne.isEmpty() && this.sensitiveMethodsInBranchTwo.isEmpty())) {
+			Set<SootMethod> intersection = new HashSet<SootMethod>(this.sensitiveMethodsInBranchOne);
+			Set<SootMethod> union = new HashSet<SootMethod>(this.sensitiveMethodsInBranchOne);
+			intersection.retainAll(this.sensitiveMethodsInBranchTwo);
+			union.addAll(this.sensitiveMethodsInBranchTwo);
+			this.differenceBetweenBranches = 1 - (intersection.size()/union.size());
+		}
 	}
 
 	private void checkParameterUSedInGuardedCode() {
@@ -153,7 +172,7 @@ public class FeatureVector {
 		}
 	}
 
-	private void inspectMethod(SootMethod sm, ArrayList<SootMethod> visitedMethods) {
+	private void inspectMethod(SootMethod sm, ArrayList<SootMethod> visitedMethods, Unit unit) {
 		if(sm.getName().equals(Constants.IF_METHOD)) {
 			return;
 		}
@@ -182,6 +201,11 @@ public class FeatureVector {
 				}
 			}
 			if(SensitiveMethodsManager.v().contains(methodSignature)) {
+				if(this.trigger.getBranchOne().contains(unit)) {
+					this.getSensitiveMethodsInBranchOne().add(sm);
+				}else if(this.trigger.getBranchTwo().contains(unit)) {
+					this.getSensitiveMethodsInBranchTwo().add(sm);
+				}
 				this.setNumberOfSensitiveMethods(this.getNumberOfSensitiveMethods() + 1);
 			}
 			if(!this.isNative && sc.isApplicationClass() && !Utils.isSystemClass(sc.getName()) && sm.isNative()) {
@@ -200,8 +224,10 @@ public class FeatureVector {
 				SootMethod targetMethod = null;
 				Body b = sm.retrieveActiveBody();
 				final PatchingChain<Unit> units = b.getUnits();
+				Unit unitBody = null;
 				for(Iterator<Unit> iter = units.snapshotIterator(); iter.hasNext();) {
-					stmt = (Stmt) iter.next();
+					unitBody = iter.next();
+					stmt = (Stmt) unitBody;
 					if(stmt.containsInvokeExpr()) {
 						Iterator<Edge> it = Scene.v().getCallGraph().edgesOutOf(stmt);
 						while(it.hasNext()) {
@@ -209,7 +235,7 @@ public class FeatureVector {
 							targetMethod = next.getTgt().method();
 							SootClass cl = targetMethod.getDeclaringClass();
 							if(cl.isApplicationClass() && !Utils.isSystemClass(cl.getName())) {
-								this.inspectMethod(targetMethod, visitedMethods);
+								this.inspectMethod(targetMethod, visitedMethods, unitBody);
 							}
 						}
 					}
@@ -297,5 +323,29 @@ public class FeatureVector {
 
 	public void setNumberOfSensitiveMethodCalledOnlyInTrigger(int numberOfSensitiveMethodCalledOnlyInTrigger) {
 		this.numberOfSensitiveMethodCalledOnlyInTrigger = numberOfSensitiveMethodCalledOnlyInTrigger;
+	}
+
+	public int getDifferenceBetweenBranches() {
+		return differenceBetweenBranches;
+	}
+
+	public void setDifferenceBetweenBranches(int differenceBetweenBranches) {
+		this.differenceBetweenBranches = differenceBetweenBranches;
+	}
+
+	public Set<SootMethod> getSensitiveMethodsInBranchOne() {
+		return sensitiveMethodsInBranchOne;
+	}
+
+	public void setSensitiveMethodsInBranchOne(Set<SootMethod> sensitiveMethodsInBranchOne) {
+		this.sensitiveMethodsInBranchOne = sensitiveMethodsInBranchOne;
+	}
+
+	public Set<SootMethod> getSensitiveMethodsInBranchTwo() {
+		return sensitiveMethodsInBranchTwo;
+	}
+
+	public void setSensitiveMethodsInBranchTwo(Set<SootMethod> sensitiveMethodsInBranchTwo) {
+		this.sensitiveMethodsInBranchTwo = sensitiveMethodsInBranchTwo;
 	}
 }
