@@ -102,7 +102,6 @@ public class FlowAnalysis {
 		InfoflowCFG icfg = new InfoflowCFG();
 		Unit u = null;
 		List<SootMethod> sources = null;
-
 		if(results != null) {
 			if(results.getResults() != null && !results.getResults().isEmpty()) {
 				for (ResultSinkInfo sink : results.getResults().keySet()) {

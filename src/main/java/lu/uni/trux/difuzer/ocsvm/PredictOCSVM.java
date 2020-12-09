@@ -16,11 +16,12 @@ public class PredictOCSVM {
 	private static PredictOCSVM instance;
 
 	private svm_model model;
-	private String model_path;
 	private int svm_type;
 	private int nr_class;
 
-	private PredictOCSVM() {}
+	private PredictOCSVM() {
+		this.loadDefaultModel();
+	}
 
 	public static PredictOCSVM v() {
 		if(instance == null) {
@@ -29,16 +30,10 @@ public class PredictOCSVM {
 		return instance;
 	}
 
-	public void loadDefaultModel() {
+	private void loadDefaultModel() {
 		if(model == null) {
-			this.model_path = Constants.TRIGGER_MODEL_FILE;
-			this.loadModel();
+			this.loadModel(Constants.TRIGGER_MODEL_FILE);
 		}
-	}
-
-	public void loadModel(String path) {
-		this.model_path = path;
-		this.loadModel();
 	}
 
 	public double predict(FeatureVector fv) {
@@ -62,9 +57,9 @@ public class PredictOCSVM {
 		}
 	}
 
-	private void loadModel() {
+	public void loadModel(String path) {
 		try {
-			InputStream fis =  this.getClass().getResourceAsStream(this.model_path);
+			InputStream fis =  this.getClass().getResourceAsStream(path);
 			BufferedReader br = new BufferedReader(new InputStreamReader(fis));
 			this.model = svm.svm_load_model(br);
 			if(model != null) {
