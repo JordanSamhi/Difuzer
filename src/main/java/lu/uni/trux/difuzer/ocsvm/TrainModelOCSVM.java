@@ -1,6 +1,9 @@
 package lu.uni.trux.difuzer.ocsvm;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import libsvm.svm;
@@ -8,7 +11,6 @@ import libsvm.svm_model;
 import libsvm.svm_node;
 import libsvm.svm_parameter;
 import libsvm.svm_problem;
-import redis.clients.jedis.Jedis;
 
 /*-
  * #%L
@@ -39,46 +41,42 @@ import redis.clients.jedis.Jedis;
 public class TrainModelOCSVM {
 
 	public static void main(String[] args) {
-		String auth = null;
 		String path = null;
-		if(args.length < 2) {
-			System.err.println("Usage: TrainModelOCSVM server redislist");
+		if(args.length < 1) {
+			System.err.println("Usage: TrainModelOCSVM modelPath");
 			System.exit(1);
 		}
-		if(args.length == 3) {
-			auth = args[2];
-		}
-		if(args.length == 4) {
-			path = args[3];
-		}
-		String server = args[0];
-		String redisList = args[1];
+		String modelPath = args[0];
 
-		System.out.println("[*] Connecting to " + server + "...");
-		final Jedis jedis = new Jedis(server);
-		jedis.select(0);
-
-		if(auth != null) {
-			jedis.auth(auth);
-		}
-
-		System.out.println("[*] Connected to " + server);
 		System.out.println("[*] Retrieving vectors...");
-		List<String> vectors = jedis.lrange(redisList, 0, -1);
-		vectors = vectors.subList(0, 10000);
-		jedis.close();
 
-		if(vectors != null) {
-			System.out.println("[*] Vectors retrieved");
-		}else {
-			System.out.println("[!] Could not retrieve vectors");
+		List<String> vectors = new ArrayList<String>();
+
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(modelPath));
+			String line = null;
+			String[] split = null;
+			String v = null;
+			while((line=br.readLine()) != null) {
+				v = "";
+				split = line.split(" ");
+				for(int i = 1 ; i < split.length; i++) {
+					if(i != 1) {
+						v += ",";
+					}
+					v += split[i];
+				}
+				vectors.add(v);
+			}
+			br.close();
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
 		}
-
+		
 		int size = vectors.size();
-		int vectorSize = vectors.get(0).split(",").length;
+		int vectorSize;
 
 		System.out.println("[*] Number of vectors: " + size);
-		System.out.println("[*] Number of features per vector: " + vectorSize);
 		svm_node[][] nodes = new svm_node[size][];
 		svm_node[] node = null;
 
@@ -86,11 +84,12 @@ public class TrainModelOCSVM {
 
 		for(int j = 0 ; j < size ; j++) {
 			String[] values = vectors.get(j).split(",");
+			vectorSize = values.length;
 			node = new svm_node[vectorSize];
 			for(int i = 0 ; i < vectorSize ; i++) {
 				node[i] = new svm_node();
-				node[i].index = i;
-				node[i].value = Double.parseDouble(values[i]);
+				node[i].index = Integer.parseInt(values[i].split(":")[0]);
+				node[i].value = Double.parseDouble(values[i].split(":")[1]);
 			}
 			nodes[j] = node;
 		}
@@ -110,11 +109,11 @@ public class TrainModelOCSVM {
 		problem.y = labels;
 
 		parameters.svm_type = svm_parameter.ONE_CLASS;
-		parameters.kernel_type = svm_parameter.SIGMOID;
-		parameters.gamma = 1.0/vectorSize;
+		parameters.kernel_type = svm_parameter.RBF;
+		parameters.gamma = 0.001;
 		parameters.cache_size = 100;
 		parameters.eps = 0.001;
-		parameters.nu = 0.5;
+		parameters.nu = 0.001;
 		parameters.probability = 0;
 		parameters.p = 0.1;
 		parameters.shrinking = 1;
@@ -139,7 +138,7 @@ public class TrainModelOCSVM {
 		}
 
 		final double[] target = new double[problem.l];
-		svm.svm_cross_validation(problem, parameters, 10, target);
+		svm.svm_cross_validation(problem, parameters, 50, target);
 
 		int totalCorrect = 0;
 		for(int i = 0 ; i < problem.l ; i++) {
@@ -148,8 +147,7 @@ public class TrainModelOCSVM {
 			}
 		}
 		final double accuracy = 100.0 * totalCorrect / problem.l;
-
-		System.out.println("[*] Cross Validation Accuracy = " + accuracy + "%");
+		System.out.println("[*] Cross Validation Accuracy = " + Math.round(accuracy) + "%");
 		System.out.println("[*] Done");
 	}
 
