@@ -147,7 +147,7 @@ public class TrainModelOCSVM {
 			}
 		}
 		final double accuracy = 100.0 * totalCorrect / problem.l;
-		System.out.println("[*] Cross Validation Accuracy = " + Math.round(accuracy) + "%");
+		System.out.println("[*] Cross Validation Accuracy = " + accuracy + "%");
 		System.out.println("[*] Done");
 	}
 
