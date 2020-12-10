@@ -69,10 +69,13 @@ public class FlowAnalysis {
 		ifac.setCallgraphAlgorithm(CallgraphAlgorithm.CHA);
 		SetupApplication sa = new SetupApplication(ifac);
 		sa.setIpcManager(new ConditionsManagement());
-		sa.constructCallgraph(); //pre-compute sources and sinks
+		try {
+			sa.constructCallgraph(); //pre-compute sources and sinks
+		}catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
 		// keep instrumentation in current Soot instance
 		sa.getConfig().setSootIntegrationMode(SootIntegrationMode.UseExistingInstance);
-
 		if(options.hasEasyTaintWrapperFile()) {
 			final ITaintPropagationWrapper taintWrapper;
 			EasyTaintWrapper easyTaintWrapper = null;
