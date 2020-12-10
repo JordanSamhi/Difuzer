@@ -40,7 +40,10 @@ public class ResultsAccumulator {
 	private int instrumentedIfCount;
 	private int flowsFoundCount;
 	private int analysisElapsedTime;
-	private int triggersFoundCount;
+	private int taintAnalysisElapsedTime;
+	private int instrumentationElapsedTime;
+	private int triggersAfterAnomalyDetection;
+	private int triggersBeforeAnomalyDetection;
 	List<TriggerIfCall> triggersFound;
 
 	private String appName;
@@ -48,8 +51,11 @@ public class ResultsAccumulator {
 	private ResultsAccumulator () {
 		this.setInstrumentedIfCount(0);
 		this.setFlowsFoundCount(0);
+		this.setTaintAnalysisElapsedTime(0);
+		this.setInstrumentationElapsedTime(0);
 		this.setAnalysisElapsedTime(0);
-		this.setTriggersFoundCount(0);
+		this.setTriggersBeforeAnomalyDetection(0);
+		this.setTriggersAfterAnomalyDetection(0);
 		this.setAppName("");
 		this.triggersFound = new ArrayList<TriggerIfCall>();
 	}
@@ -67,10 +73,6 @@ public class ResultsAccumulator {
 
 	public void incrementFlowsCount() {
 		this.setFlowsFoundCount(this.getFlowsFoundCount() + 1);
-	}
-
-	public void incrementTriggersFoundCount() {
-		this.setTriggersFoundCount(this.getTriggersFoundCount() + 1);
 	}
 
 	public int getInstrumentedIfCount() {
@@ -105,21 +107,13 @@ public class ResultsAccumulator {
 		this.appName = appName;
 	}
 
-	public int getTriggersFoundCount() {
-		return triggersFoundCount;
-	}
-
-	public void setTriggersFoundCount(int triggersFound) {
-		this.triggersFoundCount = triggersFound;
-	}
-
 	public List<TriggerIfCall> getTriggersFound() {
 		return triggersFound;
 	}
 
 	public void setTriggersFound(List<TriggerIfCall> triggersFound) {
 		this.triggersFound = triggersFound;
-		this.setTriggersFoundCount(this.triggersFound.size());
+		this.setTriggersAfterAnomalyDetection(this.triggersFound.size());
 	}
 
 	public void printVectorResults() {
@@ -152,8 +146,40 @@ public class ResultsAccumulator {
 	}
 
 	private String generateVector() {
-		return String.format("%s;%s;%s;%s;%s", this.getAppName(), this.getInstrumentedIfCount(),
-				this.getFlowsFoundCount(), this.getAnalysisElapsedTime(), this.getTriggersFoundCount());
+		return String.format("%s;%s;%s;%s;%s;%s;%s;%s", this.getAppName(), this.getInstrumentedIfCount(),
+				this.getFlowsFoundCount(), this.getAnalysisElapsedTime(), this.getTriggersBeforeAnomalyDetection(),
+				this.getTriggersAfterAnomalyDetection(), this.getTaintAnalysisElapsedTime(), this.getInstrumentationElapsedTime());
 	}
 
+	public int getTriggersAfterAnomalyDetection() {
+		return triggersAfterAnomalyDetection;
+	}
+
+	public void setTriggersAfterAnomalyDetection(int triggersAfterAnomalyDetection) {
+		this.triggersAfterAnomalyDetection = triggersAfterAnomalyDetection;
+	}
+
+	public int getTriggersBeforeAnomalyDetection() {
+		return triggersBeforeAnomalyDetection;
+	}
+
+	public void setTriggersBeforeAnomalyDetection(int triggersBeforeAnomalyDetection) {
+		this.triggersBeforeAnomalyDetection = triggersBeforeAnomalyDetection;
+	}
+
+	public int getTaintAnalysisElapsedTime() {
+		return taintAnalysisElapsedTime;
+	}
+
+	public void setTaintAnalysisElapsedTime(int taintAnalysisElapsedTime) {
+		this.taintAnalysisElapsedTime = taintAnalysisElapsedTime;
+	}
+
+	public int getInstrumentationElapsedTime() {
+		return instrumentationElapsedTime;
+	}
+
+	public void setInstrumentationElapsedTime(int instrumentationElapsedTime) {
+		this.instrumentationElapsedTime = instrumentationElapsedTime;
+	}
 }

@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.profiler.StopWatch;
 
 import lu.uni.trux.difuzer.files.SourcesSinksManager;
 import lu.uni.trux.difuzer.triggers.TriggerIfCall;
@@ -92,11 +93,15 @@ public class FlowAnalysis {
 		}
 
 		InfoflowResults results = null;
+		StopWatch swAnalysis = new StopWatch("Taint Analysis");
+		swAnalysis.start("Taint Analysis");
 		try {
 			results = sa.runInfoflow(SourcesSinksManager.v().getSources(), SourcesSinksManager.v().getSinks());
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 		}
+		swAnalysis.stop();
+		ResultsAccumulator.v().setTaintAnalysisElapsedTime((int) (swAnalysis.elapsedTime() / 1000000000));
 		
 		List<TriggerIfCall> triggers = new ArrayList<TriggerIfCall>();
 		InfoflowCFG icfg = new InfoflowCFG();

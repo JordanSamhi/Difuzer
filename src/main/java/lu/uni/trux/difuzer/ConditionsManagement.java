@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.profiler.StopWatch;
 
 import heros.InterproceduralCFG;
 import lu.uni.trux.difuzer.files.LibrariesManager;
@@ -67,6 +68,8 @@ public class ConditionsManagement implements IIPCManager{
 	@Override
 	public void updateJimpleForICC() {
 		if(!this.isInstrumentation_performed()) {
+			StopWatch swAnalysis = new StopWatch("Instrumentation");
+			swAnalysis.start("Instrumentation");
 			this.initializeNewClasses();
 			for(SootClass sc : Scene.v().getApplicationClasses()) {
 				if(!Utils.isSystemClass(sc.getName()) && sc.isConcrete()) {
@@ -98,6 +101,8 @@ public class ConditionsManagement implements IIPCManager{
 				}
 			}
 			this.setInstrumentation_performed(true);
+			swAnalysis.stop();
+			ResultsAccumulator.v().setInstrumentationElapsedTime((int) (swAnalysis.elapsedTime() / 1000000000));
 		}
 	}
 
