@@ -44,11 +44,20 @@ public class Constants {
 	public static final String NULL = "null";
 	public static final String EQUALS = " == ";
 	public static final String DIFFERENT = " != ";
+	public static final String BROADCAST_RECEIVER = "BroadcastReceiver";
+	public static final String ACTIVITY = "Activity";
+	public static final String CONTENT_PROVIDER = "ContentProvider";
+	public static final String SERVICE = "Service";
+	public static final String NON_COMPONENT = "non-component";
 
 	/**
 	 * Classes
 	 */
 	public static final String JAVA_LANG_OBJECT = "java.lang.Object";
+	public static final String ANDROID_APP_ACTIVITY = "android.app.Activity";
+	public static final String ANDROID_CONTENT_BROADCASTRECEIVER = "android.content.BroadcastReceiver";
+	public static final String ANDROID_APP_SERVICE = "android.app.Service";
+	public static final String ANDROID_CONTENT_CONTENTPROVIDER = "android.content.ContentProvider";
 
 	/**
 	 * Methods

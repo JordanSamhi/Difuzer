@@ -2,8 +2,10 @@ package lu.uni.trux.difuzer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import lu.uni.trux.difuzer.triggers.TriggerIfCall;
+import lu.uni.trux.difuzer.utils.Utils;
 import redis.clients.jedis.Jedis;
 import soot.SootMethod;
 
@@ -118,6 +120,24 @@ public class ResultsAccumulator {
 
 	public void printVectorResults() {
 		System.out.println(this.generateVector());
+		System.out.println(this.generateVectorByTrigger());
+	}
+	
+	private String generateVectorByTrigger() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("%");
+		for(TriggerIfCall t: this.triggersFound) {
+			sb.append(t.getMethod());
+			sb.append(";");
+			sb.append(String.join("|", t.getSources().stream().map(source -> source.getSignature()).collect(Collectors.toList())));
+			sb.append(";");
+			sb.append(t.getBranchOne().size());
+			sb.append(";");
+			sb.append(t.getBranchTwo().size());
+			sb.append(";");
+			sb.append(Utils.getComponentType(t.getMethod().getDeclaringClass()));
+		}
+		return sb.toString();
 	}
 
 	public void printTriggersResults() {

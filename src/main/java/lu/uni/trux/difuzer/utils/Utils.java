@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import soot.Body;
 import soot.Local;
 import soot.Scene;
+import soot.SootClass;
 import soot.SootMethodRef;
 import soot.Type;
 import soot.Unit;
@@ -124,5 +125,29 @@ public class Utils {
 			}
 		}
 		return false;
+	}
+	
+	private static List<SootClass> getAllSuperClasses(SootClass sootClass) {
+		List<SootClass> classes = new ArrayList<SootClass>();
+		SootClass superClass = null;
+		if (sootClass.hasSuperclass()) {
+			superClass = sootClass.getSuperclass();
+			classes.add(superClass);
+			classes.addAll(getAllSuperClasses(superClass));
+		}
+		return classes;
+	}
+
+	public static String getComponentType(SootClass sc) {
+		List<SootClass> classes = getAllSuperClasses(sc);
+		for(SootClass c : classes) {
+			switch (c.getName()) {
+			case Constants.ANDROID_APP_ACTIVITY : return Constants.ACTIVITY;
+			case Constants.ANDROID_CONTENT_BROADCASTRECEIVER : return Constants.BROADCAST_RECEIVER;
+			case Constants.ANDROID_CONTENT_CONTENTPROVIDER : return Constants.CONTENT_PROVIDER;
+			case Constants.ANDROID_APP_SERVICE : return Constants.SERVICE;
+			}
+		}
+		return Constants.NON_COMPONENT;
 	}
 }
