@@ -7,9 +7,6 @@ import java.util.List;
 import lu.uni.trux.difuzer.utils.Constants;
 import lu.uni.trux.difuzer.utils.Utils;
 import soot.Local;
-import soot.RefType;
-import soot.Scene;
-import soot.SootClass;
 import soot.SootMethod;
 import soot.Type;
 import soot.UnitPatchingChain;
@@ -43,10 +40,9 @@ import soot.jimple.JimpleBody;
  * #L%
  */
 
-public class IfClassGenerator {
+public class IfClassGenerator extends Generator{
 
 	private static IfClassGenerator instance;
-	private SootClass ifClass;
 	private List<List<Type>> typesManaged;
 
 	private IfClassGenerator() {
@@ -58,30 +54,6 @@ public class IfClassGenerator {
 			instance = new IfClassGenerator();
 		}
 		return instance;
-	}
-
-	public void generateClass() {
-		this.ifClass = new SootClass(Constants.IF_CLASS, Modifier.PUBLIC);
-		this.ifClass.setSuperclass(Scene.v().getSootClass(Constants.JAVA_LANG_OBJECT));
-		Scene.v().addClass(this.ifClass);
-		this.ifClass.setApplicationClass();
-		this.generateInitMethod();
-	}
-
-	private void generateInitMethod() {
-		SootMethod sm = new SootMethod(Constants.INIT,
-				new ArrayList<Type>(), VoidType.v(), Modifier.PUBLIC);
-		JimpleBody body = Jimple.v().newBody(sm);
-		sm.setActiveBody(body);
-		UnitPatchingChain units = body.getUnits();
-		Local thisLocal = Utils.addLocalToBody(body, RefType.v(Constants.IF_CLASS));
-		units.add(Jimple.v().newIdentityStmt(thisLocal, Jimple.v().newThisRef(RefType.v(Constants.IF_CLASS))));
-		units.add(Jimple.v().newInvokeStmt(
-				Jimple.v().newSpecialInvokeExpr(thisLocal,
-						Utils.getMethodRef(Constants.JAVA_LANG_OBJECT, Constants.INIT_METHOD_SUBSIG))));
-		units.add(Jimple.v().newReturnVoidStmt());
-		body.validate();
-		this.ifClass.addMethod(sm);
 	}
 
 	public SootMethod generateIfMethod(List<Type> types) {
@@ -102,10 +74,15 @@ public class IfClassGenerator {
 			}
 			units.add(Jimple.v().newReturnVoidStmt());
 			body.validate();
-			this.ifClass.addMethod(sm);
+			this.clazz.addMethod(sm);
 			this.typesManaged.add(types);
 			return sm;
 		}
-		return this.ifClass.getMethod(Constants.IF_METHOD, types);
+		return this.clazz.getMethod(Constants.IF_METHOD, types);
+	}
+
+	@Override
+	protected String getClazz() {
+		return Constants.IF_CLASS;
 	}
 }
