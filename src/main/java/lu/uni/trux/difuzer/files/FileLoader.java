@@ -39,16 +39,16 @@ public abstract class FileLoader {
 	protected FileLoader () {
 		this.items = this.loadFile(this.getFile());
 	}
-	
+
 	protected abstract String getFile();
-	
+
 	public boolean contains(String s) {
 		if(this.items.contains(s)) {
 			return true;
 		}
 		return false;
 	}
-	
+
 	private Set<String> loadFile(String file) {
 		InputStream fis = null;
 		BufferedReader br = null;
@@ -58,7 +58,10 @@ public abstract class FileLoader {
 			fis = this.getClass().getResourceAsStream(file);
 			br = new BufferedReader(new InputStreamReader(fis));
 			while ((line = br.readLine()) != null)   {
-				set.add(line);
+				if(!line.startsWith("#") && !line.isEmpty()) {
+					set.add(line);
+					System.out.println(line);
+				}
 			}
 			br.close();
 			fis.close();
