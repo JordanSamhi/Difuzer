@@ -60,7 +60,6 @@ public abstract class FileLoader {
 			while ((line = br.readLine()) != null)   {
 				if(!line.startsWith("#") && !line.isEmpty()) {
 					set.add(line);
-					System.out.println(line);
 				}
 			}
 			br.close();
