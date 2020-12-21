@@ -1,3 +1,4 @@
+#MISC
 <android.telephony.SmsMessage: java.lang.String getMessageBody()>
 <android.telephony.SmsMessage: java.lang.String getOriginatingAddress()>
 <android.telephony.SmsMessage: java.lang.String getDisplayMessageBody()>
@@ -10,3 +11,48 @@
 <android.telephony.TelephonyManager: java.lang.String getSimSerialNumber()>
 <android.telephony.TelephonyManager: java.lang.String getLine1Number()>
 <javax.servlet.ServletRequest: java.lang.String getParameter(java.lang.String)>
+
+
+# SENSORS
+<android.hardware.SensorManager: android.hardware.Sensor getDefaultSensor(int)>
+<android.hardware.SensorManager: android.hardware.Sensor getDefaultSensor(int,boolean)>
+<android.hardware.Sensor: int getReportingMode()>
+<android.hardware.Sensor: int getHighestDirectReportRateLevel()>
+<android.hardware.Sensor: boolean isDirectChannelTypeSupported(int)>
+<android.hardware.Sensor: java.lang.String getName()>
+<android.hardware.Sensor: java.lang.String getVendor()>
+<android.hardware.Sensor: int getType()>
+<android.hardware.Sensor: int getVersion()>
+<android.hardware.Sensor: float getMaximumRange()>
+<android.hardware.Sensor: float getResolution()>
+<android.hardware.Sensor: float getPower()>
+<android.hardware.Sensor: int getMinDelay()>
+<android.hardware.Sensor: int getFifoReservedEventCount()>
+<android.hardware.Sensor: int getFifoMaxEventCount()>
+<android.hardware.Sensor: java.lang.String getStringType()>
+<android.hardware.Sensor: int getId()>
+<android.hardware.Sensor: int getMaxDelay()>
+<android.hardware.Sensor: boolean isWakeUpSensor()>
+<android.hardware.Sensor: boolean isDynamicSensor()>
+<android.hardware.Sensor: boolean isAdditionalInfoSupported()>
+
+# CURSORS
+<android.database.Cursor: int getCount()>
+<android.database.Cursor: int getPosition()>
+<android.database.Cursor: int getColumnIndex(java.lang.String)>
+<android.database.Cursor: int getColumnIndexOrThrow(java.lang.String)>
+<android.database.Cursor: java.lang.String getColumnName(int)>
+<android.database.Cursor: java.lang.String[] getColumnNames()>
+<android.database.Cursor: int getColumnCount()>
+<android.database.Cursor: byte[] getBlob(int)>
+<android.database.Cursor: java.lang.String getString(int)>
+<android.database.Cursor: short getShort(int)>
+<android.database.Cursor: int getInt(int)>
+<android.database.Cursor: long getLong(int)>
+<android.database.Cursor: float getFloat(int)>
+<android.database.Cursor: double getDouble(int)>
+<android.database.Cursor: int getType(int)>
+<android.database.Cursor: android.net.Uri getNotificationUri()>
+<android.database.Cursor: java.util.List<android.net.Uri> getNotificationUris()>
+<android.database.Cursor: boolean getWantsAllOnMoveCalls()>
+<android.database.Cursor: android.os.Bundle getExtras()>
