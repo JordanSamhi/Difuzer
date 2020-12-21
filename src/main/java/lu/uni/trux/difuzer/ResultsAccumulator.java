@@ -134,8 +134,8 @@ public class ResultsAccumulator {
 		if(this.triggersFound == null || this.triggersFound.isEmpty()) {
 			return "";
 		}
-		sb.append("%");
 		for(TriggerIfCall t: this.triggersFound) {
+			sb.append("%");
 			sb.append(t.getMethod());
 			sb.append(";");
 			sb.append(String.join("|", t.getSources().stream().map(source -> source.getSignature()).collect(Collectors.toList())));
@@ -145,6 +145,7 @@ public class ResultsAccumulator {
 			sb.append(t.getBranchTwo().size());
 			sb.append(";");
 			sb.append(Utils.getComponentType(t.getMethod().getDeclaringClass()));
+			sb.append("\n");
 		}
 		return sb.toString();
 	}

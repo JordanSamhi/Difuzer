@@ -106,7 +106,7 @@ public class FlowAnalysis {
 		}
 		swAnalysis.stop();
 		ResultsAccumulator.v().setTaintAnalysisElapsedTime((int) (swAnalysis.elapsedTime() / 1000000000));
-		
+
 		List<TriggerIfCall> triggers = new ArrayList<TriggerIfCall>();
 		InfoflowCFG icfg = new InfoflowCFG();
 		Unit u = null;
@@ -117,7 +117,10 @@ public class FlowAnalysis {
 					sources = new ArrayList<SootMethod>();
 					logger.info(String.format("Sensitive information found in condition : %s", sink));
 					for (ResultSourceInfo source : results.getResults().get(sink)) {
-						sources.add(source.getStmt().getInvokeExpr().getMethod());
+						SootMethod sm = source.getStmt().getInvokeExpr().getMethod();
+						if(!sources.contains(sm)) {
+							sources.add(sm);
+						}
 					}
 					ResultsAccumulator.v().incrementFlowsCount();
 					u = sink.getStmt();
@@ -125,7 +128,7 @@ public class FlowAnalysis {
 				}
 			}
 		}
-		
+
 		return triggers;
 	}
 }
