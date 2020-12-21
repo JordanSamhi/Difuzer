@@ -35,8 +35,10 @@ public class Constants {
 	 */
 	public static final String DIFUZER = "Difuzer";
 	public static final String IF_CLASS = "IfClass";
+	public static final String BUILD_CLASS = "BuildClass";
 	public static final String INIT = "<init>";
 	public static final String IF_METHOD = "ifMethod";
+	public static final String BUILD_METHOD_PREFIX = "get";
 	public static final String SOURCE = "_SOURCE_";
 	public static final String SINK = "_SINK_";
 	public static final String TARGET_TMP_DIR = String.format("%s%s%s", System.getProperty("java.io.tmpdir"), File.separator, "difuzer");
@@ -58,6 +60,7 @@ public class Constants {
 	public static final String ANDROID_CONTENT_BROADCASTRECEIVER = "android.content.BroadcastReceiver";
 	public static final String ANDROID_APP_SERVICE = "android.app.Service";
 	public static final String ANDROID_CONTENT_CONTENTPROVIDER = "android.content.ContentProvider";
+	public static final String JAVA_LANG_STRING = "java.lang.String";
 
 	/**
 	 * Methods
@@ -74,4 +77,5 @@ public class Constants {
 	public static final String DYNAMIC_LOADING_FILE = "/dynamic_loading_methods.txt";
 	public static final String BACKGROUND_METHODS_FILE = "/background_methods.txt";
 	public static final String TRIGGER_MODEL_FILE = "/triggers.model";
+	public static final String BUILD_FIELDS_FILE = "/build_fields.txt";
 }

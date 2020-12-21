@@ -40,6 +40,7 @@ public class ResultsAccumulator {
 	private static ResultsAccumulator instance;
 
 	private int instrumentedIfCount;
+	private int instrumentedBuildCount;
 	private int flowsFoundCount;
 	private int analysisElapsedTime;
 	private int taintAnalysisElapsedTime;
@@ -58,6 +59,7 @@ public class ResultsAccumulator {
 		this.setAnalysisElapsedTime(0);
 		this.setTriggersBeforeAnomalyDetection(0);
 		this.setTriggersAfterAnomalyDetection(0);
+		this.setInstrumentedBuildCount(0);
 		this.setAppName("");
 		this.triggersFound = new ArrayList<TriggerIfCall>();
 	}
@@ -71,6 +73,10 @@ public class ResultsAccumulator {
 
 	public void incrementIfCount() {
 		this.setInstrumentedIfCount(this.getInstrumentedIfCount() + 1);
+	}
+	
+	public void incrementBuildCount() {
+		this.setInstrumentedBuildCount(this.getInstrumentedBuildCount() + 1);
 	}
 
 	public void incrementFlowsCount() {
@@ -125,6 +131,9 @@ public class ResultsAccumulator {
 	
 	private String generateVectorByTrigger() {
 		StringBuilder sb = new StringBuilder();
+		if(this.triggersFound == null || this.triggersFound.isEmpty()) {
+			return "";
+		}
 		sb.append("%");
 		for(TriggerIfCall t: this.triggersFound) {
 			sb.append(t.getMethod());
@@ -201,5 +210,13 @@ public class ResultsAccumulator {
 
 	public void setInstrumentationElapsedTime(int instrumentationElapsedTime) {
 		this.instrumentationElapsedTime = instrumentationElapsedTime;
+	}
+
+	public int getInstrumentedBuildCount() {
+		return instrumentedBuildCount;
+	}
+
+	public void setInstrumentedBuildCount(int instrumentedBuildCount) {
+		this.instrumentedBuildCount = instrumentedBuildCount;
 	}
 }

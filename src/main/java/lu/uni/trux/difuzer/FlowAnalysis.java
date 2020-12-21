@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.profiler.StopWatch;
 
 import lu.uni.trux.difuzer.files.SourcesSinksManager;
+import lu.uni.trux.difuzer.instrumentation.InstrumentationEngine;
 import lu.uni.trux.difuzer.triggers.TriggerIfCall;
 import lu.uni.trux.difuzer.utils.CommandLineOptions;
 import soot.SootMethod;
@@ -68,7 +69,7 @@ public class FlowAnalysis {
 		ifac.getAnalysisFileConfig().setTargetAPKFile(this.options.getApk());
 		ifac.setCallgraphAlgorithm(CallgraphAlgorithm.CHA);
 		SetupApplication sa = new SetupApplication(ifac);
-		sa.setIpcManager(new ConditionsManagement());
+		sa.setIpcManager(new InstrumentationEngine());
 		try {
 			sa.constructCallgraph(); //pre-compute sources and sinks
 		}catch (Exception e) {
@@ -94,10 +95,10 @@ public class FlowAnalysis {
 			taintWrapper = easyTaintWrapper;
 			sa.setTaintWrapper(taintWrapper);
 		}
-
 		InfoflowResults results = null;
 		StopWatch swAnalysis = new StopWatch("Taint Analysis");
 		swAnalysis.start("Taint Analysis");
+
 		try {
 			results = sa.runInfoflow(SourcesSinksManager.v().getSources(), SourcesSinksManager.v().getSinks());
 		} catch (Exception e) {

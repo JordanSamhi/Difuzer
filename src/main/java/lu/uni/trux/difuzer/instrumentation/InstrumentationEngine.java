@@ -1,4 +1,4 @@
-package lu.uni.trux.difuzer;
+package lu.uni.trux.difuzer.instrumentation;
 
 import java.util.Iterator;
 
@@ -7,18 +7,22 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.profiler.StopWatch;
 
 import heros.InterproceduralCFG;
+import lu.uni.trux.difuzer.ResultsAccumulator;
+import lu.uni.trux.difuzer.files.BuildFieldsManager;
 import lu.uni.trux.difuzer.files.LibrariesManager;
-import lu.uni.trux.difuzer.instrumentation.IfClassGenerator;
-import lu.uni.trux.difuzer.instrumentation.UnitGenerator;
 import lu.uni.trux.difuzer.utils.CommandLineOptions;
 import lu.uni.trux.difuzer.utils.Utils;
 import soot.Body;
 import soot.PatchingChain;
 import soot.Scene;
 import soot.SootClass;
+import soot.SootField;
 import soot.SootMethod;
 import soot.Unit;
+import soot.Value;
 import soot.jimple.AbstractStmtSwitch;
+import soot.jimple.AssignStmt;
+import soot.jimple.FieldRef;
 import soot.jimple.IfStmt;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.ipc.IIPCManager;
@@ -49,15 +53,16 @@ import soot.jimple.infoflow.ipc.IIPCManager;
  * #L%
  */
 
-public class ConditionsManagement implements IIPCManager{
+public class InstrumentationEngine implements IIPCManager{
 
 	CommandLineOptions options;
 
-	private Logger logger = LoggerFactory.getLogger(ConditionsManagement.class);
+	private Logger logger = LoggerFactory.getLogger(InstrumentationEngine.class);
 	private boolean instrumentation_performed = false;
 
 	private void initializeNewClasses() {
 		IfClassGenerator.v().generateClass();
+		BuildClassGenerator.v().generateClass();
 	}
 
 	@Override
@@ -90,6 +95,25 @@ public class ConditionsManagement implements IIPCManager{
 													b.validate();
 													logger.debug(String.format("If method successfully generated: %s", newUnit));
 													ResultsAccumulator.v().incrementIfCount();
+												}
+											}
+											public void caseAssignStmt(AssignStmt stmt) {
+												Value rop = stmt.getRightOp();
+												if(rop instanceof FieldRef) {
+													FieldRef fr = (FieldRef) rop;
+													SootField sf = fr.getField();
+													if(BuildFieldsManager.v().contains(sf.getSignature())) {
+														Unit newUnit = UnitGenerator.v().generateBuildMethodCall(
+																stmt.getLeftOp(), 
+																sf);
+														if(newUnit != null) {
+															logger.debug(String.format("Generating build method for field: %s", stmt));
+															units.insertAfter(newUnit, stmt);
+															b.validate();
+															logger.debug(String.format("Build method successfully generated: %s", newUnit));
+															ResultsAccumulator.v().incrementBuildCount();
+														}
+													}
 												}
 											}
 										});

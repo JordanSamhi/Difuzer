@@ -74,6 +74,10 @@ public class SourcesSinksManager extends FileLoader {
 	public void addSink(SootMethod sm) {
 		this.sinks.add(new AndroidMethod(sm));
 	}
+	
+	public void addSource(SootMethod sm) {
+		this.sources.add(new AndroidMethod(sm));
+	}
 
 	@Override
 	protected String getFile() {

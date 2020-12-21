@@ -6,6 +6,7 @@ import java.util.List;
 import lu.uni.trux.difuzer.files.SourcesSinksManager;
 import lu.uni.trux.difuzer.utils.Constants;
 import lu.uni.trux.difuzer.utils.Utils;
+import soot.SootField;
 import soot.SootMethod;
 import soot.SootMethodRef;
 import soot.Type;
@@ -93,6 +94,15 @@ public class UnitGenerator {
 		SourcesSinksManager.v().addSink(ref.resolve());
 		Unit u = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(
 				ref, args));
+		return u;
+	}
+	
+	public Unit generateBuildMethodCall(Value leftOp, SootField field) {
+		SootMethod newBuildMethod = BuildClassGenerator.v().generateBuildMethod(field.getName());
+		SootMethodRef ref = Utils.getMethodRef(Constants.BUILD_CLASS, newBuildMethod.getSubSignature());
+		SourcesSinksManager.v().addSource(ref.resolve());
+		Unit u = Jimple.v().newAssignStmt(leftOp, Jimple.v().newStaticInvokeExpr(
+				ref, new ArrayList<Value>()));
 		return u;
 	}
 
