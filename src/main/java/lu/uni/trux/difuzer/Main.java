@@ -1,5 +1,6 @@
 package lu.uni.trux.difuzer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.profiler.StopWatch;
@@ -9,6 +10,7 @@ import lu.uni.trux.difuzer.triggers.TriggerIfCall;
 import lu.uni.trux.difuzer.utils.CommandLineOptions;
 import lu.uni.trux.difuzer.utils.TimeOut;
 import lu.uni.trux.difuzer.utils.Utils;
+import soot.Scene;
 
 /*-
  * #%L
@@ -54,21 +56,29 @@ public class Main {
 		FlowAnalysis fa = new  FlowAnalysis(options);
 		List<TriggerIfCall> triggers = fa.run();
 
-		ResultsAccumulator.v().setTriggersFound(triggers);
+		ResultsAccumulator.v().setTriggersBeforeAnomalyDetection(triggers.size());
 
-		PredictOCSVM.v().loadDefaultModel();
 		double prediction;
+		List<TriggerIfCall> triggersToRemove = new ArrayList<TriggerIfCall>();
 		for(TriggerIfCall t: triggers) {
-			FeatureVector fv = new FeatureVector(t);
+			FeatureVector fv = new FeatureVector(t, Scene.v().getCallGraph());
 			prediction = PredictOCSVM.v().predict(fv);
-			System.out.println(prediction);
+			if(prediction == 1) {
+				triggersToRemove.add(t);
+			}
 		}
-
+		triggers.removeAll(triggersToRemove);
+		ResultsAccumulator.v().setTriggersAfterAnomalyDetection(triggers.size());
+		ResultsAccumulator.v().setTriggersFound(triggers);
 		swAnalysis.stop();
 		ResultsAccumulator.v().setAnalysisElapsedTime((int) (swAnalysis.elapsedTime() / 1000000000));
 		ResultsAccumulator.v().setAppName(Utils.getBasenameWithoutExtension(options.getApk()));
-		ResultsAccumulator.v().printVectorResults();
-		ResultsAccumulator.v().printTriggersResults();
+
+		if(options.hasRaw()) {
+			ResultsAccumulator.v().printVectorResults();
+		}else {
+			ResultsAccumulator.v().printTriggersResults();
+		}
 		to.cancel();
 	}
 }

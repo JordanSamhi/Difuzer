@@ -72,6 +72,7 @@ public class CommandLineOptions {
 	private static final Triplet<String, String, String> ETW = new Triplet<String, String, String>("etw", "e", "Easy Taint Wrapper file");
 	private static final Triplet<String, String, String> HELP = new Triplet<String, String, String>("help", "h", "Print this message");
 	private static final Triplet<String, String, String> TIMEOUT = new Triplet<String, String, String>("timeout", "t", "Set the timeout for analysis");
+	private static final Triplet<String, String, String> RAW = new Triplet<String, String, String>("raw", "r", "Print raw results");
 	private static final Triplet<String, String, String> PLATFORMS =
 			new Triplet<String, String, String>("platforms", "p", "Android platforms folder");
 
@@ -128,6 +129,14 @@ public class CommandLineOptions {
 				.required(false)
 				.build();
 		
+		final Option raw = Option.builder(RAW.getValue1())
+				.longOpt(RAW.getValue0())
+				.desc(RAW.getValue2())
+				.hasArg(false)
+				.argName(RAW.getValue0())
+				.required(false)
+				.build();
+		
 		final Option to = Option.builder(TIMEOUT.getValue1())
 				.longOpt(TIMEOUT.getValue0())
 				.desc(TIMEOUT.getValue2())
@@ -153,6 +162,7 @@ public class CommandLineOptions {
 		this.firstOptions.addOption(help);
 
 		this.options.addOption(apk);
+		this.options.addOption(raw);
 		this.options.addOption(platforms);
 		this.options.addOption(etw);
 		this.options.addOption(to);
@@ -176,6 +186,10 @@ public class CommandLineOptions {
 	
 	public boolean hasEasyTaintWrapperFile() {
 		return this.cmdLine.hasOption(ETW.getValue1());
+	}
+	
+	public boolean hasRaw() {
+		return this.cmdLine.hasOption(RAW.getValue1());
 	}
 	
 	public boolean hasTimeout() {
