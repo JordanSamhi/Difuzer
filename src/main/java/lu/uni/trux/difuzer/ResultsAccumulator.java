@@ -126,7 +126,6 @@ public class ResultsAccumulator {
 
 	public void printVectorResults() {
 		System.out.println(this.generateVector());
-		System.out.println(this.generateVectorByTrigger());
 	}
 	
 	private String generateVectorByTrigger() {
@@ -135,17 +134,18 @@ public class ResultsAccumulator {
 			return "";
 		}
 		for(TriggerIfCall t: this.triggersFound) {
-			sb.append("%");
+			if(! t.equals(this.triggersFound.get(0))) {
+				sb.append("@");
+			}
 			sb.append(t.getMethod());
-			sb.append(";");
+			sb.append("#");
 			sb.append(String.join("|", t.getSources().stream().map(source -> source.getSignature()).collect(Collectors.toList())));
-			sb.append(";");
+			sb.append("#");
 			sb.append(t.getBranchOne().size());
-			sb.append(";");
+			sb.append("#");
 			sb.append(t.getBranchTwo().size());
-			sb.append(";");
+			sb.append("#");
 			sb.append(Utils.getComponentType(t.getMethod().getDeclaringClass()));
-			sb.append("\n");
 		}
 		return sb.toString();
 	}
@@ -176,9 +176,10 @@ public class ResultsAccumulator {
 	}
 
 	private String generateVector() {
-		return String.format("%s;%s;%s;%s;%s;%s;%s;%s", this.getAppName(), this.getInstrumentedIfCount(),
+		return String.format("%s;%s;%s;%s;%s;%s;%s;%s;%s", this.getAppName(), this.getInstrumentedIfCount(),
 				this.getFlowsFoundCount(), this.getAnalysisElapsedTime(), this.getTriggersBeforeAnomalyDetection(),
-				this.getTriggersAfterAnomalyDetection(), this.getTaintAnalysisElapsedTime(), this.getInstrumentationElapsedTime());
+				this.getTriggersAfterAnomalyDetection(), this.getTaintAnalysisElapsedTime(), this.getInstrumentationElapsedTime(),
+				this.generateVectorByTrigger());
 	}
 
 	public int getTriggersAfterAnomalyDetection() {
