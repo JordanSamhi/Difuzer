@@ -35,6 +35,8 @@ import java.util.TimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import lu.uni.trux.difuzer.ResultsAccumulator;
+
 public class TimeOut {
 
 	private Timer timer;
@@ -43,13 +45,20 @@ public class TimeOut {
 
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	public TimeOut(int n) {
+	public TimeOut(int n, boolean hasRaw, String appName) {
 		this.timer = new Timer();
 		this.exitTask = new TimerTask() {
 			@Override
 			public void run() {
 				logger.warn("Timeout reached !");
 				logger.warn("Ending program...");
+				ResultsAccumulator.v().setAnalysisElapsedTime(timeout);
+				ResultsAccumulator.v().setAppName(Utils.getBasenameWithoutExtension(appName));
+				if(hasRaw) {
+					ResultsAccumulator.v().printVectorResults();
+				}else {
+					ResultsAccumulator.v().printTriggersResults();
+				}
 				System.exit(0);
 			}
 		};

@@ -50,7 +50,7 @@ public class Main {
 		}else {
 			timeout = 60;
 		}
-		TimeOut to = new TimeOut(timeout);
+		TimeOut to = new TimeOut(timeout, options.hasRaw(), options.getApk());
 		to.trigger();
 
 		FlowAnalysis fa = new  FlowAnalysis(options);
