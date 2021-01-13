@@ -2,6 +2,7 @@ package lu.uni.trux.difuzer.instrumentation;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.List;
 
 import lu.uni.trux.difuzer.utils.Constants;
 import soot.RefType;
@@ -10,6 +11,7 @@ import soot.Type;
 import soot.UnitPatchingChain;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
+import soot.jimple.NullConstant;
 
 /*-
  * #%L
@@ -40,8 +42,11 @@ import soot.jimple.JimpleBody;
 public class BuildClassGenerator extends Generator{
 
 	private static BuildClassGenerator instance;
+	private List<String> buildNameManaged;
 
-	private BuildClassGenerator() {}
+	private BuildClassGenerator() {
+		this.buildNameManaged = new ArrayList<String>();
+	}
 
 	public static BuildClassGenerator v() {
 		if(instance == null) {
@@ -51,16 +56,20 @@ public class BuildClassGenerator extends Generator{
 	}
 
 	public SootMethod generateBuildMethod(String buildName) {
-		String methodName = String.format("%s%s", Constants.BUILD_METHOD_PREFIX, buildName);
-		SootMethod sm = new SootMethod(methodName,
-				new ArrayList<Type>(), RefType.v(Constants.JAVA_LANG_STRING), Modifier.PUBLIC | Modifier.STATIC);
-		JimpleBody body = Jimple.v().newBody(sm);
-		sm.setActiveBody(body);
-		UnitPatchingChain units = body.getUnits();
-		units.add(Jimple.v().newReturnVoidStmt());
-		body.validate();
-		this.clazz.addMethod(sm);
-		return sm;
+		if(!this.buildNameManaged.contains(buildName)) {
+			String methodName = String.format("%s%s", Constants.BUILD_METHOD_PREFIX, buildName);
+			SootMethod sm = new SootMethod(methodName,
+					new ArrayList<Type>(), RefType.v(Constants.JAVA_LANG_STRING), Modifier.PUBLIC | Modifier.STATIC);
+			this.clazz.addMethod(sm);
+			JimpleBody body = Jimple.v().newBody(sm);
+			sm.setActiveBody(body);
+			UnitPatchingChain units = body.getUnits();
+			units.add(Jimple.v().newReturnStmt(NullConstant.v()));
+			body.validate();
+			this.buildNameManaged.add(buildName);
+			return sm;
+		}
+		return this.clazz.getMethodByName(String.format("%s%s", Constants.BUILD_METHOD_PREFIX, buildName));
 	}
 
 	@Override

@@ -61,6 +61,7 @@ public class IfClassGenerator extends Generator{
 			List<Local> locals = new ArrayList<Local>();
 			SootMethod sm = new SootMethod(Constants.IF_METHOD,
 					types, VoidType.v(), Modifier.PUBLIC | Modifier.STATIC);
+			this.clazz.addMethod(sm);
 			JimpleBody body = Jimple.v().newBody(sm);
 			sm.setActiveBody(body);
 			UnitPatchingChain units = body.getUnits();
@@ -74,7 +75,6 @@ public class IfClassGenerator extends Generator{
 			}
 			units.add(Jimple.v().newReturnVoidStmt());
 			body.validate();
-			this.clazz.addMethod(sm);
 			this.typesManaged.add(types);
 			return sm;
 		}
