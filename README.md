@@ -19,7 +19,7 @@ mvn clean install
 </pre>
 
 <pre>
-java -jar RAICC/target/Difuzer-0.1-jar-with-dependencies.jar <i>options</i>
+java -jar Difuzer/target/Difuzer-0.1-jar-with-dependencies.jar <i>options</i>
 </pre>
 
 Options:
