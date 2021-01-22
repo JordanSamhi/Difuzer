@@ -34,6 +34,7 @@ public class Constants {
 	 * Misc
 	 */
 	public static final String DIFUZER = "Difuzer";
+	public static final String VERSION = "1.0";
 	public static final String IF_CLASS = "IfClass";
 	public static final String BUILD_CLASS = "BuildClass";
 	public static final String INIT = "<init>";
@@ -78,4 +79,5 @@ public class Constants {
 	public static final String BACKGROUND_METHODS_FILE = "/background_methods.txt";
 	public static final String TRIGGER_MODEL_FILE = "/triggers.model";
 	public static final String BUILD_FIELDS_FILE = "/build_fields.txt";
+	public static final String KNOWN_HSO_FILE = "/known_hsos.txt";
 }

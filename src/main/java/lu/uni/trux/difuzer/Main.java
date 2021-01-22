@@ -1,13 +1,17 @@
 package lu.uni.trux.difuzer;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.profiler.StopWatch;
 
+import lu.uni.trux.difuzer.filters.FilterImpl;
+import lu.uni.trux.difuzer.filters.KnownHSOsFilter;
 import lu.uni.trux.difuzer.ocsvm.PredictOCSVM;
 import lu.uni.trux.difuzer.triggers.TriggerIfCall;
 import lu.uni.trux.difuzer.utils.CommandLineOptions;
+import lu.uni.trux.difuzer.utils.Constants;
 import lu.uni.trux.difuzer.utils.TimeOut;
 import lu.uni.trux.difuzer.utils.Utils;
 import soot.Scene;
@@ -44,6 +48,11 @@ public class Main {
 		swAnalysis.start("Difuzer");
 
 		CommandLineOptions options = new CommandLineOptions(args);
+		
+		if(!options.hasRaw()) {
+			System.out.println(String.format("%s v%s started on %s\n", Constants.DIFUZER, Constants.VERSION, new Date()));
+		}
+		
 		int timeout;
 		if(options.hasTimeout()) {
 			timeout = options.getTimeout();
@@ -68,6 +77,7 @@ public class Main {
 			}
 		}
 		triggers.removeAll(triggersToRemove);
+		
 		ResultsAccumulator.v().setTriggersAfterAnomalyDetection(triggers.size());
 		ResultsAccumulator.v().setTriggersFound(triggers);
 		swAnalysis.stop();
