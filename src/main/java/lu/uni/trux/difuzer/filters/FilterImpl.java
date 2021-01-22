@@ -51,7 +51,6 @@ public abstract class FilterImpl implements Filter {
 	
 	@Override
 	public void filterTriggers(List<Trigger> triggers) {
-		//TODO modify this
 		this.triggers.removeAll(triggers);
 	}
 }
