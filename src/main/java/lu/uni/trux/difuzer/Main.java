@@ -6,8 +6,6 @@ import java.util.List;
 
 import org.slf4j.profiler.StopWatch;
 
-import lu.uni.trux.difuzer.filters.FilterImpl;
-import lu.uni.trux.difuzer.filters.KnownHSOsFilter;
 import lu.uni.trux.difuzer.ocsvm.PredictOCSVM;
 import lu.uni.trux.difuzer.triggers.TriggerIfCall;
 import lu.uni.trux.difuzer.utils.CommandLineOptions;
