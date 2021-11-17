@@ -21,8 +21,8 @@
 		<developer>
 			<name>Jordan Samhi</name>
 			<email>jordan.samhi@uni.lu</email>
-			<organization>SnT - Interdisciplinary Centre for Security, Reliability and Trust</organization>
-			<organizationUrl>https://wwwfr.uni.lu/snt</organizationUrl>
+			<organization>TruX - Trustworthy Software</organization>
+			<organizationUrl>https://wwwfr.uni.lu/snt/research/trux</organizationUrl>
 		</developer>
 	</developers>
 	<build>
