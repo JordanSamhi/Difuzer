@@ -10,6 +10,21 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
+	
+	<licenses>
+		<license>
+			<name>Apache License 2.0</name>
+			<url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<name>Jordan Samhi</name>
+			<email>jordan.samhi@uni.lu</email>
+			<organization>SnT - Interdisciplinary Centre for Security, Reliability and Trust</organization>
+			<organizationUrl>https://wwwfr.uni.lu/snt</organizationUrl>
+		</developer>
+	</developers>
 	<build>
 		<plugins>
 			<plugin>
