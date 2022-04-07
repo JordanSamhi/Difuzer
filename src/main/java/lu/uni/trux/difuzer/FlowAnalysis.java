@@ -15,9 +15,9 @@ import lu.uni.trux.difuzer.triggers.TriggerIfCall;
 import lu.uni.trux.difuzer.utils.CommandLineOptions;
 import soot.SootMethod;
 import soot.Unit;
+import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowConfiguration.CallgraphAlgorithm;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
-import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.SootIntegrationMode;
 import soot.jimple.infoflow.android.SetupApplication;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.results.ResultSinkInfo;
@@ -76,7 +76,7 @@ public class FlowAnalysis {
 			System.err.println(e.getMessage());
 		}
 		// keep instrumentation in current Soot instance
-		sa.getConfig().setSootIntegrationMode(SootIntegrationMode.UseExistingInstance);
+		sa.getConfig().setSootIntegrationMode(InfoflowConfiguration.SootIntegrationMode.UseExistingInstance);
 		if(options.hasEasyTaintWrapperFile()) {
 			final ITaintPropagationWrapper taintWrapper;
 			EasyTaintWrapper easyTaintWrapper = null;
