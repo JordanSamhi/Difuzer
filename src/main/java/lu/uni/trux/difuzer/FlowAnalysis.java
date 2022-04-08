@@ -76,7 +76,7 @@ public class FlowAnalysis {
 			System.err.println(e.getMessage());
 		}
 		// keep instrumentation in current Soot instance
-		sa.getConfig().setSootIntegrationMode(InfoflowConfiguration.SootIntegrationMode.UseExistingInstance);
+		sa.getConfig().setSootIntegrationMode(InfoflowAndroidConfiguration.SootIntegrationMode.UseExistingInstance);
 		if(options.hasEasyTaintWrapperFile()) {
 			final ITaintPropagationWrapper taintWrapper;
 			EasyTaintWrapper easyTaintWrapper = null;
